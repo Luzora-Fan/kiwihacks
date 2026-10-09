@@ -13,3 +13,4 @@ Add stages of visual decay to earths health as it depletes [WAITING FOR EARTH DE
 Change the "surveyed" caption around planets to "uninhabitable", with a red border (because of the lore where we are tryna find a new planet until we realise there is no new planet, just earth) [DONE]
 QUICK TIME EVENTS [DONE]
 Add a land button (E) to land on planets that will initiate a perfect time clicker a bar where u have to click at the right time. Land on green = land. Land on red = crash, which makes you lose 20% of your credits. [DONE]
+Death Screen when earth hits 0%
