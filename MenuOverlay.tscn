@@ -295,7 +295,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="ControlsText" type="Label" parent="Card/Pages/ControlsPage"]
-custom_minimum_size = Vector2(0, 120)
+custom_minimum_size = Vector2(360, 120)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.8, 0.82, 1)
 theme_override_font_sizes/font_size = 13
@@ -350,7 +350,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="StepText" type="Label" parent="Card/Pages/GuidePage"]
-custom_minimum_size = Vector2(0, 140)
+custom_minimum_size = Vector2(360, 140)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.8, 0.82, 1)
 theme_override_font_sizes/font_size = 13
@@ -514,7 +514,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Summary" type="Label" parent="Card/Pages/LeaderboardPage"]
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(360, 44)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.8, 0.82, 1)
 theme_override_font_sizes/font_size = 12
