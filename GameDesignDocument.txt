@@ -1,3 +1,9 @@
 First we will need to set up a 2d plane that takes the form of a map of the solar system
 It needs to be draggable to move to see other planets
 The planets will be in different directions, increasingly far away from the earth.
+We need to be able to select a planet and then make the space ship travel there
+It takes a set amount of time to automatically travel there
+once it arrives, it takes a set amount of time to "scan and mine" to collect resources and determine whether the planet is suitable for humans to live on or not. (However no planet will be suitable, so you can always just say that the planet is bad)
+The ship travels home and sells the resources that it collected.
+Money is used to unlock enough fuel to travel to further away planets, but you can send rockets to already-scanned planets for free, in order to get more money.
+Money can also be used to spend on the earth and keep the planet alive (it's dying bc climate change)
