@@ -5,6 +5,7 @@ extends Control
 
 @onready var sprite: TextureRect = $Sprite
 @onready var selection_ring: Panel = $SelectionRing
+@onready var uninhabitable_badge: Panel = $UninhabitableBadge
 @onready var title_label: Label = $Title
 @onready var distance_label: Label = $Distance
 @onready var surveyed_label: Label = $Surveyed
@@ -30,7 +31,8 @@ func get_body_center() -> Vector2:
 
 
 func set_state(selected: bool, surveyed: bool, reachable: bool) -> void:
-	# Keep selection, survey progress, and fuel reach visible without changing the authored marker.
+	# Keep selection, habitability status, and fuel reach visible on the authored marker.
 	selection_ring.visible = selected
+	uninhabitable_badge.visible = surveyed
 	surveyed_label.visible = surveyed
 	sprite.modulate = Color.WHITE if reachable or surveyed else Color(0.68, 0.7, 0.74, 0.78)

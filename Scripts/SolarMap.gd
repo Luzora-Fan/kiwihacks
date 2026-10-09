@@ -9,6 +9,8 @@ const SHAKE_DURATION := 0.32
 @onready var marker_container: Control = $MapViewport/World/PlanetMarkers
 @onready var rocket_container: Node2D = $MapViewport/World/Rockets
 @onready var earth_sprite: TextureRect = $MapViewport/World/EarthSprite
+@onready var earth_halo: Panel = $MapViewport/World/EarthHalo
+@onready var earth_subtitle: Label = $MapViewport/World/EarthSubtitle
 
 var markers: Dictionary = {}
 var rockets: Dictionary = {}
@@ -22,6 +24,7 @@ var _camera_position := Vector2.ZERO
 var _shake_time_left := 0.0
 var _shake_strength := 0.0
 var _shake_offset := Vector2.ZERO
+var _earth_visual_stage := -1
 
 var _pointer_down := false
 var _dragging := false
@@ -63,6 +66,35 @@ func _process(delta: float) -> void:
 
 func get_planet_catalog() -> Array[Dictionary]:
 	return planet_data
+
+
+func set_earth_health(health: float) -> void:
+	# Tint the authored Earth art and halo to show climate damage without extra assets.
+	var stage := 0
+	if health <= 30.0:
+		stage = 2
+	elif health <= 65.0:
+		stage = 1
+	if stage == _earth_visual_stage:
+		return
+	_earth_visual_stage = stage
+
+	match stage:
+		0:
+			earth_sprite.modulate = Color.WHITE
+			earth_halo.modulate = Color.WHITE
+			earth_subtitle.text = "Home"
+			earth_subtitle.add_theme_color_override("font_color", Color(0.5, 0.68, 0.82, 1.0))
+		1:
+			earth_sprite.modulate = Color(1.0, 0.84, 0.7, 1.0)
+			earth_halo.modulate = Color(1.0, 0.72, 0.45, 1.0)
+			earth_subtitle.text = "Climate stress"
+			earth_subtitle.add_theme_color_override("font_color", Color(1.0, 0.69, 0.42, 1.0))
+		2:
+			earth_sprite.modulate = Color(1.0, 0.65, 0.65, 1.0)
+			earth_halo.modulate = Color(1.0, 0.4, 0.4, 1.0)
+			earth_subtitle.text = "Critical climate"
+			earth_subtitle.add_theme_color_override("font_color", Color(1.0, 0.46, 0.46, 1.0))
 
 
 func set_camera_locked_to_ship(locked: bool) -> void:

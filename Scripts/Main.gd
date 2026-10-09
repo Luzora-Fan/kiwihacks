@@ -6,7 +6,7 @@ const ROCKET_COSTS: Array[int] = [300, 500, 750, 1000]
 const MAX_ROCKETS := 5
 const SAVE_PATH := "user://earthward_save.json"
 const SAVE_INTERVAL := 12.0
-const CLIMATE_DECAY_PER_SECOND := 0.025
+const CLIMATE_DECAY_PER_SECOND := 0.1 # Earth loses six health points per active minute.
 const SURVEY_DURATION := 4.5
 const PROBE_DURATION := 3.2
 const LANDING_GREEN_START := 0.40
@@ -631,6 +631,7 @@ func _refresh_interface() -> void:
 	earth_health_value.text = "%d%%" % roundi(earth_health)
 	earth_header_value.text = earth_health_value.text
 	earth_progress_bar.value = earth_health
+	solar_map.call("set_earth_health", earth_health)
 	if earth_health > 65.0:
 		earth_status_value.text = "Atmosphere holding · sale efficiency %d%%." % roundi(_recovery_efficiency() * 100.0)
 	elif earth_health > 30.0:
