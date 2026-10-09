@@ -71,16 +71,16 @@ color = Color(0.008, 0.012, 0.025, 0.82)
 mouse_filter = 0
 
 [node name="Card" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(360, 360)
+custom_minimum_size = Vector2(360, 400)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -180.0
-offset_top = -180.0
+offset_top = -200.0
 offset_right = 180.0
-offset_bottom = 180.0
+offset_bottom = 200.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("MenuCardStyle")
@@ -126,6 +126,15 @@ theme_override_styles/normal = SubResource("MenuButtonStyle")
 theme_override_styles/hover = SubResource("MenuButtonStyle")
 theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Play"
+
+[node name="GuideButton" type="Button" parent="Card/Pages/MainPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Field guide"
 
 [node name="SettingsButton" type="Button" parent="Card/Pages/MainPage"]
 custom_minimum_size = Vector2(0, 36)
@@ -274,6 +283,88 @@ theme_override_styles/hover = SubResource("MenuButtonStyle")
 theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Back"
 
+[node name="GuidePage" type="VBoxContainer" parent="Card/Pages"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Card/Pages/GuidePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+theme_override_font_sizes/font_size = 23
+text = "Field guide"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StepCount" type="Label" parent="Card/Pages/GuidePage"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.67, 0.7, 0.73, 1)
+theme_override_font_sizes/font_size = 10
+text = "Step 1 of 6"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StepTitle" type="Label" parent="Card/Pages/GuidePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.91, 0.94, 1)
+theme_override_font_sizes/font_size = 17
+text = "Choose a destination"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StepText" type="Label" parent="Card/Pages/GuidePage"]
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.8, 0.82, 1)
+theme_override_font_sizes/font_size = 13
+text = "Select a planet on the map. Its distance, resources, and survey status appear in the destination panel."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Navigation" type="HBoxContainer" parent="Card/Pages/GuidePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PreviousButton" type="Button" parent="Card/Pages/GuidePage/Navigation"]
+custom_minimum_size = Vector2(0, 36)
+size_flags_horizontal = 3
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Previous"
+
+[node name="NextButton" type="Button" parent="Card/Pages/GuidePage/Navigation"]
+custom_minimum_size = Vector2(0, 36)
+size_flags_horizontal = 3
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Next"
+
+[node name="ReturnButton" type="Button" parent="Card/Pages/GuidePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Back"
+
 [node name="CreditsPage" type="VBoxContainer" parent="Card/Pages"]
 visible = false
 layout_mode = 1
@@ -340,6 +431,15 @@ theme_override_styles/normal = SubResource("MenuButtonStyle")
 theme_override_styles/hover = SubResource("MenuButtonStyle")
 theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Resume"
+
+[node name="GuideButton" type="Button" parent="Card/Pages/PausePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Field guide"
 
 [node name="SettingsButton" type="Button" parent="Card/Pages/PausePage"]
 custom_minimum_size = Vector2(0, 36)

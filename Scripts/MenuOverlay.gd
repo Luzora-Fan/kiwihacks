@@ -8,25 +8,59 @@ signal quit_requested
 signal reset_progress_requested
 
 const SETTINGS_PATH := "user://earthward_settings.cfg"
+const GUIDE_STEPS := [
+	{
+		"title": "Choose a destination",
+		"text": "Select a planet on the map. Its distance, resources, and survey status appear in the destination panel.",
+	},
+	{
+		"title": "Check your range",
+		"text": "The ship starts with a range of 260 units. If a planet is too far away, use Upgrade fuel in the sidebar. Each fuel tank costs credits.",
+	},
+	{
+		"title": "Launch a survey",
+		"text": "Choose a planet in range and press Launch survey. The rocket travels there, scans for resources, and returns to Earth with its cargo.",
+	},
+	{
+		"title": "Restore Earth",
+		"text": "Returned cargo earns credits. Earth loses health while a run is active. Use Restore Earth to improve its health and raise the value of future cargo.",
+	},
+	{
+		"title": "Explore again",
+		"text": "A surveyed planet can be visited again with a free rocket. Turn on Follow rocket to track the ship, or drag the map to pan.",
+	},
+	{
+		"title": "Pause or reset",
+		"text": "Press Escape to pause or resume. Settings has a Reset progress button that starts your save over after you confirm.",
+	},
+]
 
 @onready var main_page: VBoxContainer = $Card/Pages/MainPage
 @onready var settings_page: VBoxContainer = $Card/Pages/SettingsPage
 @onready var controls_page: VBoxContainer = $Card/Pages/ControlsPage
+@onready var guide_page: VBoxContainer = $Card/Pages/GuidePage
 @onready var credits_page: VBoxContainer = $Card/Pages/CreditsPage
 @onready var pause_page: VBoxContainer = $Card/Pages/PausePage
 @onready var volume_slider: HSlider = $Card/Pages/SettingsPage/VolumeRow/VolumeSlider
 @onready var volume_value: Label = $Card/Pages/SettingsPage/VolumeRow/VolumeValue
 @onready var fullscreen_toggle: CheckButton = $Card/Pages/SettingsPage/FullscreenToggle
 @onready var reset_confirmation: ConfirmationDialog = $ResetConfirmation
+@onready var guide_step_count: Label = $Card/Pages/GuidePage/StepCount
+@onready var guide_step_title: Label = $Card/Pages/GuidePage/StepTitle
+@onready var guide_step_text: Label = $Card/Pages/GuidePage/StepText
+@onready var guide_previous_button: Button = $Card/Pages/GuidePage/Navigation/PreviousButton
+@onready var guide_next_button: Button = $Card/Pages/GuidePage/Navigation/NextButton
 
 var _return_page := "main"
 var _master_bus_index := -1
+var _current_guide_step := 0
 
 
 func _ready() -> void:
 	_master_bus_index = AudioServer.get_bus_index("Master")
 	_load_settings()
 	$Card/Pages/MainPage/PlayButton.pressed.connect(_on_play_pressed)
+	$Card/Pages/MainPage/GuideButton.pressed.connect(_open_guide_from_main)
 	$Card/Pages/MainPage/SettingsButton.pressed.connect(_open_settings_from_main)
 	$Card/Pages/MainPage/ControlsButton.pressed.connect(_open_controls_from_main)
 	$Card/Pages/MainPage/CreditsButton.pressed.connect(_open_credits_from_main)
@@ -35,8 +69,12 @@ func _ready() -> void:
 	$Card/Pages/SettingsPage/ResetProgressButton.pressed.connect(_on_reset_progress_pressed)
 	reset_confirmation.confirmed.connect(_on_reset_progress_confirmed)
 	$Card/Pages/ControlsPage/BackButton.pressed.connect(_return_to_previous_page)
+	$Card/Pages/GuidePage/Navigation/PreviousButton.pressed.connect(_on_previous_guide_step_pressed)
+	$Card/Pages/GuidePage/Navigation/NextButton.pressed.connect(_on_next_guide_step_pressed)
+	$Card/Pages/GuidePage/ReturnButton.pressed.connect(_return_to_previous_page)
 	$Card/Pages/CreditsPage/BackButton.pressed.connect(_return_to_previous_page)
 	$Card/Pages/PausePage/ResumeButton.pressed.connect(_on_resume_pressed)
+	$Card/Pages/PausePage/GuideButton.pressed.connect(_open_guide_from_pause)
 	$Card/Pages/PausePage/SettingsButton.pressed.connect(_open_settings_from_pause)
 	$Card/Pages/PausePage/ControlsButton.pressed.connect(_open_controls_from_pause)
 	$Card/Pages/PausePage/CreditsButton.pressed.connect(_open_credits_from_pause)
@@ -68,6 +106,7 @@ func _show_page(page_name: String) -> void:
 	main_page.visible = page_name == "main"
 	settings_page.visible = page_name == "settings"
 	controls_page.visible = page_name == "controls"
+	guide_page.visible = page_name == "guide"
 	credits_page.visible = page_name == "credits"
 	pause_page.visible = page_name == "pause"
 
@@ -90,6 +129,45 @@ func _open_controls_from_main() -> void:
 func _open_controls_from_pause() -> void:
 	_return_page = "pause"
 	_show_page("controls")
+
+
+func _open_guide_from_main() -> void:
+	_return_page = "main"
+	_open_guide()
+
+
+func _open_guide_from_pause() -> void:
+	_return_page = "pause"
+	_open_guide()
+
+
+func _open_guide() -> void:
+	_update_guide_step(0)
+	_show_page("guide")
+
+
+func _update_guide_step(step_index: int) -> void:
+	# Keep the walkthrough text and navigation buttons in sync with the current step.
+	var last_step := GUIDE_STEPS.size() - 1
+	var safe_step := clampi(step_index, 0, last_step)
+	var step: Dictionary = GUIDE_STEPS[safe_step]
+	guide_step_count.text = "Step %d of %d" % [safe_step + 1, GUIDE_STEPS.size()]
+	guide_step_title.text = String(step["title"])
+	guide_step_text.text = String(step["text"])
+	guide_previous_button.disabled = safe_step == 0
+	guide_next_button.text = "Finish" if safe_step == last_step else "Next"
+	_current_guide_step = safe_step
+
+
+func _on_previous_guide_step_pressed() -> void:
+	_update_guide_step(_current_guide_step - 1)
+
+
+func _on_next_guide_step_pressed() -> void:
+	if _current_guide_step >= GUIDE_STEPS.size() - 1:
+		_return_to_previous_page()
+		return
+	_update_guide_step(_current_guide_step + 1)
 
 
 func _open_credits_from_main() -> void:
