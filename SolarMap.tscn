@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://Scripts/SolarMap.gd" id="1_map"]
 [ext_resource type="Texture2D" path="res://Textures/background.png" id="2_background"]
@@ -12,6 +12,7 @@
 [ext_resource type="Resource" path="res://Data/PlanetPavo.tres" id="10_pavo"]
 [ext_resource type="Resource" path="res://Data/PlanetCalyx.tres" id="11_calyx"]
 [ext_resource type="Resource" path="res://Data/PlanetNymba.tres" id="12_nymba"]
+[ext_resource type="Resource" path="res://Data/PlanetUmbra.tres" id="14_umbra"]
 [sub_resource type="StyleBoxFlat" id="EarthRingStyle"]
 bg_color = Color(0.16, 0.56, 0.83, 0.11)
 border_color = Color(0.47, 0.83, 1, 0.72)
@@ -190,6 +191,13 @@ offset_top = 250.0
 offset_right = 2200.0
 offset_bottom = 420.0
 planet_data = ExtResource("12_nymba")
+
+[node name="Umbra" parent="MapViewport/World/PlanetMarkers" instance=ExtResource("5_marker")]
+offset_left = 2360.0
+offset_top = 375.0
+offset_right = 2500.0
+offset_bottom = 545.0
+planet_data = ExtResource("14_umbra")
 
 [node name="Rockets" type="Node2D" parent="MapViewport/World"]
 z_index = 3

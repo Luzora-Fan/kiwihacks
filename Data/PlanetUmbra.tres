@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/PlanetData.gd" id="1_data"]
+[ext_resource type="Texture2D" path="res://Textures/Planets/Dark Planet.png" id="2_sprite"]
+
+[resource]
+script = ExtResource("1_data")
+id = "umbra"
+display_name = "Umbra"
+distance = 2050.0
+distance_label = "2,050 units"
+description = "A lightless world scored by faint mineral veins, rich in rare noctilite."
+resource = "Noctilite"
+crate_price = 70
+crate_min = 16
+crate_max = 22
+sprite = ExtResource("2_sprite")
