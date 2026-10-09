@@ -15,6 +15,7 @@ var fuel_range := 260.0
 var mission_phase := "idle"
 var mission_planet_id := ""
 var mission_progress := 0.0
+var camera_locked_to_ship := false
 var _initial_view_framed := false
 
 var _pointer_down := false
@@ -41,6 +42,17 @@ func _ready() -> void:
 
 func get_planet_catalog() -> Array[Dictionary]:
 	return planet_data
+
+
+func set_camera_locked_to_ship(locked: bool) -> void:
+	# Lock the view around the authored rocket marker while a mission is active.
+	camera_locked_to_ship = locked
+	_center_camera_on_ship()
+
+
+func reset_camera_view() -> void:
+	# Let the next map update frame Earth and the selected starting planet again.
+	_initial_view_framed = false
 
 
 func configure(
@@ -76,26 +88,37 @@ func set_mission_state(phase: String, target_id: String, progress: float) -> voi
 	mission_phase = phase
 	mission_planet_id = target_id
 	mission_progress = clampf(progress, 0.0, 1.0)
-	ship_sprite.visible = mission_phase != "idle" and markers.has(mission_planet_id)
-	if not ship_sprite.visible:
+	if mission_phase == "idle" or not markers.has(mission_planet_id):
+		ship_sprite.visible = false
+		var earth_center := earth_sprite.position + earth_sprite.size * 0.5
+		ship_sprite.position = earth_center - ship_sprite.size * 0.5
+		_center_camera_on_ship()
 		return
+	ship_sprite.visible = true
 
 	var earth_center := earth_sprite.position + earth_sprite.size * 0.5
 	var target_marker: Control = markers[mission_planet_id]
 	var target_center: Vector2 = target_marker.position + target_marker.call("get_body_center")
+	var eased_progress := _ease_in_out(mission_progress)
 	var ship_position := earth_center
 	if mission_phase == "outbound":
-		ship_position = earth_center.lerp(target_center, mission_progress)
+		ship_position = earth_center.lerp(target_center, eased_progress)
 	elif mission_phase == "scanning":
 		ship_position = target_center
 	elif mission_phase == "returning":
-		ship_position = target_center.lerp(earth_center, mission_progress)
+		ship_position = target_center.lerp(earth_center, eased_progress)
 
 	var travel_direction := target_center - earth_center
 	if mission_phase == "returning":
 		travel_direction = -travel_direction
 	ship_sprite.position = ship_position - ship_sprite.size * 0.5
 	ship_sprite.rotation = travel_direction.angle() + PI * 0.5
+	_center_camera_on_ship()
+
+
+func _ease_in_out(progress: float) -> float:
+	# Slow the rocket at launch and arrival while keeping the flight duration unchanged.
+	return progress * progress * (3.0 - 2.0 * progress)
 
 
 func _gui_input(event: InputEvent) -> void:
@@ -116,7 +139,7 @@ func _gui_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion and _pointer_down:
 		if not _dragging and event.position.distance_to(_press_position) > 6.0:
 			_dragging = true
-		if _dragging:
+		if _dragging and not camera_locked_to_ship:
 			world.position += event.relative
 			_clamp_pan()
 		accept_event()
@@ -141,6 +164,14 @@ func _clamp_pan() -> void:
 	var minimum_y := minf(0.0, size.y - world.size.y)
 	world.position.x = clampf(world.position.x, minimum_x, 0.0)
 	world.position.y = clampf(world.position.y, minimum_y, 0.0)
+
+
+func _center_camera_on_ship() -> void:
+	if not camera_locked_to_ship or size.x <= 0.0 or size.y <= 0.0:
+		return
+	var ship_center := ship_sprite.position + ship_sprite.size * 0.5
+	world.position = size * 0.5 - ship_center
+	_clamp_pan()
 
 
 func _fit_world_to_markers() -> void:

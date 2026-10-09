@@ -521,6 +521,8 @@ size_flags_vertical = 3
 
 [node name="SolarMap" parent="MapPanel/MapContent" unique_id=1418705271 instance=ExtResource("3_map")]
 layout_mode = 1
+offset_top = 60.0
+offset_bottom = -38.0
 
 [node name="MapTitle" type="Label" parent="MapPanel/MapContent" unique_id=117399416]
 layout_mode = 0
@@ -541,6 +543,20 @@ offset_bottom = 52.0
 theme_override_colors/font_color = Color(0.7, 0.71, 0.73, 1)
 theme_override_font_sizes/font_size = 9
 text = "Drag to pan · Select a planet to set course"
+
+[node name="CameraFollowToggle" type="CheckButton" parent="MapPanel/MapContent"]
+custom_minimum_size = Vector2(150, 30)
+layout_mode = 0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -168.0
+offset_top = 12.0
+offset_right = -14.0
+offset_bottom = 42.0
+theme_override_colors/font_color = Color(0.82, 0.84, 0.86, 1)
+theme_override_font_sizes/font_size = 10
+text = "Follow rocket"
+tooltip_text = "Keep the rocket in view"
 
 [node name="MapLegend" type="Label" parent="MapPanel/MapContent" unique_id=227074426]
 layout_mode = 0

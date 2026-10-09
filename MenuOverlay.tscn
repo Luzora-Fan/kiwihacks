@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://Scripts/MenuOverlay.gd" id="1_menu"]
 
@@ -21,6 +21,22 @@ content_margin_bottom = 16.0
 [sub_resource type="StyleBoxFlat" id="MenuButtonStyle"]
 bg_color = Color(0.16, 0.19, 0.22, 1)
 border_color = Color(0.34, 0.38, 0.42, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+content_margin_left = 10.0
+content_margin_top = 7.0
+content_margin_right = 10.0
+content_margin_bottom = 7.0
+
+[sub_resource type="StyleBoxFlat" id="QuitButtonStyle"]
+bg_color = Color(0.48, 0.12, 0.13, 1)
+border_color = Color(0.68, 0.2, 0.2, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
@@ -120,6 +136,15 @@ theme_override_styles/hover = SubResource("MenuButtonStyle")
 theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Settings"
 
+[node name="ControlsButton" type="Button" parent="Card/Pages/MainPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Controls"
+
 [node name="CreditsButton" type="Button" parent="Card/Pages/MainPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
@@ -128,6 +153,15 @@ theme_override_styles/normal = SubResource("MenuButtonStyle")
 theme_override_styles/hover = SubResource("MenuButtonStyle")
 theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Credits"
+
+[node name="QuitButton" type="Button" parent="Card/Pages/MainPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.94, 0.94, 1)
+theme_override_styles/normal = SubResource("QuitButtonStyle")
+theme_override_styles/hover = SubResource("QuitButtonStyle")
+theme_override_styles/pressed = SubResource("QuitButtonStyle")
+text = "Quit"
 
 [node name="SettingsPage" type="VBoxContainer" parent="Card/Pages"]
 visible = false
@@ -183,7 +217,55 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.84, 0.86, 1)
 text = "Fullscreen"
 
+[node name="ResetProgressButton" type="Button" parent="Card/Pages/SettingsPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Reset progress"
+
 [node name="BackButton" type="Button" parent="Card/Pages/SettingsPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Back"
+
+[node name="ControlsPage" type="VBoxContainer" parent="Card/Pages"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Card/Pages/ControlsPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+theme_override_font_sizes/font_size = 23
+text = "Controls"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ControlsText" type="Label" parent="Card/Pages/ControlsPage"]
+custom_minimum_size = Vector2(0, 120)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.8, 0.82, 1)
+theme_override_font_sizes/font_size = 13
+text = "Click a planet to select it\nDrag the map to pan\nTurn on Follow rocket to track the ship\nUse Launch survey to visit new worlds\nUse the sidebar to upgrade fuel or restore Earth\nPress Escape to pause or resume"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="BackButton" type="Button" parent="Card/Pages/ControlsPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
@@ -268,6 +350,15 @@ theme_override_styles/hover = SubResource("MenuButtonStyle")
 theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Settings"
 
+[node name="ControlsButton" type="Button" parent="Card/Pages/PausePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Controls"
+
 [node name="CreditsButton" type="Button" parent="Card/Pages/PausePage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
@@ -285,3 +376,18 @@ theme_override_styles/normal = SubResource("MenuButtonStyle")
 theme_override_styles/hover = SubResource("MenuButtonStyle")
 theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Main menu"
+
+[node name="QuitButton" type="Button" parent="Card/Pages/PausePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.94, 0.94, 1)
+theme_override_styles/normal = SubResource("QuitButtonStyle")
+theme_override_styles/hover = SubResource("QuitButtonStyle")
+theme_override_styles/pressed = SubResource("QuitButtonStyle")
+text = "Quit"
+
+[node name="ResetConfirmation" type="ConfirmationDialog" parent="."]
+title = "Reset progress"
+dialog_text = "Reset your saved progress? This clears credits, surveys, fuel upgrades and Earth's recovery."
+ok_button_text = "Reset progress"
+cancel_button_text = "Cancel"

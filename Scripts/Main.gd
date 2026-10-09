@@ -11,6 +11,7 @@ const PROBE_DURATION := 3.2
 # The scene owns all UI and map nodes. This script updates their state from the expedition data.
 @onready var solar_map: Node = $MapPanel/MapContent/SolarMap
 @onready var menu_overlay: Node = $MenuOverlay
+@onready var camera_follow_toggle: CheckButton = $MapPanel/MapContent/CameraFollowToggle
 @onready var flight_audio_player: AudioStreamPlayer = $FlightAudio
 @onready var landing_audio_player: AudioStreamPlayer = $LandingAudio
 @onready var alert_audio_player: AudioStreamPlayer = $AlertAudio
@@ -69,10 +70,13 @@ func _ready() -> void:
 	primary_button.pressed.connect(_on_primary_pressed)
 	fuel_button.pressed.connect(_on_fuel_pressed)
 	restore_button.pressed.connect(_on_restore_pressed)
+	camera_follow_toggle.toggled.connect(_on_camera_follow_toggled)
 	solar_map.connect("planet_selected", Callable(self, "_on_planet_selected"))
 	menu_overlay.connect("play_requested", Callable(self, "_on_play_requested"))
 	menu_overlay.connect("resume_requested", Callable(self, "_on_resume_requested"))
 	menu_overlay.connect("main_menu_requested", Callable(self, "_on_main_menu_requested"))
+	menu_overlay.connect("quit_requested", Callable(self, "_on_quit_requested"))
+	menu_overlay.connect("reset_progress_requested", Callable(self, "_on_reset_progress_requested"))
 	_refresh_interface()
 	_update_mission_presentation()
 
@@ -146,6 +150,47 @@ func _on_main_menu_requested() -> void:
 	_save_game()
 	game_started = false
 	game_paused = false
+	menu_overlay.call("show_main_menu")
+
+
+func _on_camera_follow_toggled(locked: bool) -> void:
+	solar_map.call("set_camera_locked_to_ship", locked)
+
+
+func _on_quit_requested() -> void:
+	_save_game()
+	get_tree().quit()
+
+
+func _on_reset_progress_requested() -> void:
+	# Replace the saved expedition with the same starting state as a new run.
+	credits = 210
+	earth_health = 76.0
+	fuel_tier = 0
+	fuel_range = 260.0
+	selected_planet_id = "veyra"
+	scanned_planet_ids.clear()
+	planet_reports.clear()
+	mission_phase = "idle"
+	mission_planet_id = ""
+	mission_was_probe = false
+	mission_duration = 0.0
+	mission_time_left = 0.0
+	mission_reward = 0
+	mission_crates = 0
+	mission_cargo_resource = ""
+	mission_research_bonus = 0
+	mission_feed = "Choose a destination and launch your first survey."
+	_ui_refresh_clock = 0.0
+	_save_clock = 0.0
+	game_started = false
+	game_paused = false
+	camera_follow_toggle.set_pressed_no_signal(false)
+	solar_map.call("set_camera_locked_to_ship", false)
+	solar_map.call("reset_camera_view")
+	_refresh_interface()
+	_update_mission_presentation()
+	_save_game()
 	menu_overlay.call("show_main_menu")
 
 
