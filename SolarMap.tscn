@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://Scripts/SolarMap.gd" id="1_map"]
 [ext_resource type="Texture2D" path="res://Textures/background.png" id="2_background"]
@@ -13,46 +13,6 @@
 [ext_resource type="Resource" path="res://Data/PlanetPavo.tres" id="10_pavo"]
 [ext_resource type="Resource" path="res://Data/PlanetCalyx.tres" id="11_calyx"]
 [ext_resource type="Resource" path="res://Data/PlanetNymba.tres" id="12_nymba"]
-[ext_resource type="Texture2D" path="res://Textures/ParticleGlow.svg" id="14_particle_glow"]
-
-[sub_resource type="Gradient" id="StarParticleGradient"]
-offsets = PackedFloat32Array(0, 0.4, 1)
-colors = PackedColorArray(0.7, 0.86, 1.0, 0.0, 0.7, 0.86, 1.0, 0.8, 0.7, 0.86, 1.0, 0.0)
-
-[sub_resource type="GradientTexture1D" id="StarParticleRamp"]
-gradient = SubResource("StarParticleGradient")
-
-[sub_resource type="ParticleProcessMaterial" id="StarParticleMaterial"]
-direction = Vector3(0, -1, 0)
-spread = 180.0
-initial_velocity_min = 1.0
-initial_velocity_max = 4.0
-gravity = Vector3(0, 0, 0)
-emission_shape = 3
-emission_box_extents = Vector3(1130, 380, 0)
-scale_min = 0.3
-scale_max = 0.7
-color = Color(0.55, 0.75, 1, 0.6)
-color_ramp = SubResource("StarParticleRamp")
-
-[sub_resource type="Gradient" id="RocketTrailGradient"]
-offsets = PackedFloat32Array(0, 0.35, 1)
-colors = PackedColorArray(1.55, 1.8, 2.2, 0.95, 0.35, 0.85, 1.5, 0.75, 0.12, 0.25, 0.65, 0.0)
-
-[sub_resource type="GradientTexture1D" id="RocketTrailRamp"]
-gradient = SubResource("RocketTrailGradient")
-use_hdr = true
-
-[sub_resource type="ParticleProcessMaterial" id="RocketTrailMaterial"]
-direction = Vector3(0, 1, 0)
-spread = 16.0
-initial_velocity_min = 8.0
-initial_velocity_max = 24.0
-gravity = Vector3(0, 0, 0)
-scale_min = 0.3
-scale_max = 0.8
-color_ramp = SubResource("RocketTrailRamp")
-
 [sub_resource type="StyleBoxFlat" id="EarthRingStyle"]
 bg_color = Color(0.16, 0.56, 0.83, 0.11)
 border_color = Color(0.47, 0.83, 1, 0.72)
@@ -113,16 +73,6 @@ mouse_filter = 2
 offset_right = 2260.0
 offset_bottom = 760.0
 mouse_filter = 2
-
-[node name="StarParticles" type="GPUParticles2D" parent="MapViewport/World"]
-position = Vector2(1130, 380)
-amount = 72
-lifetime = 18.0
-speed_scale = 0.45
-local_coords = true
-visibility_rect = Rect2(-1200, -450, 2400, 900)
-process_material = SubResource("StarParticleMaterial")
-texture = ExtResource("14_particle_glow")
 
 [node name="SunSprite" type="TextureRect" parent="MapViewport/World"]
 offset_left = 54.0
@@ -241,16 +191,6 @@ offset_top = 250.0
 offset_right = 2200.0
 offset_bottom = 420.0
 planet_data = ExtResource("12_nymba")
-
-[node name="RocketTrail" type="GPUParticles2D" parent="MapViewport/World"]
-emitting = false
-amount = 20
-lifetime = 0.42
-local_coords = false
-visibility_rect = Rect2(-80, -80, 160, 160)
-process_material = SubResource("RocketTrailMaterial")
-texture = ExtResource("14_particle_glow")
-texture_filter = 2
 
 [node name="ShipSprite" type="TextureRect" parent="MapViewport/World"]
 visible = false
