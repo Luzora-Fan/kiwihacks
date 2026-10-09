@@ -19,7 +19,7 @@ const GUIDE_STEPS := [
 	},
 	{
 		"title": "Launch a survey",
-		"text": "Choose a planet in range and press Launch survey. The rocket travels there, scans for resources, and returns to Earth with its cargo.",
+		"text": "Choose a planet in range and launch a rocket. At the planet, press E or click Land, then stop the marker in the green zone. Red means a crash and costs 20% of your credits.",
 	},
 	{
 		"title": "Restore Earth",
@@ -27,7 +27,7 @@ const GUIDE_STEPS := [
 	},
 	{
 		"title": "Explore again",
-		"text": "A surveyed planet can be visited again with a free rocket. Turn on Follow rocket to track the ship, or drag the map to pan.",
+		"text": "A surveyed planet can be visited again with a free rocket. Buy more rockets to run missions at the same time. Turn on Follow rocket to track the fleet, or drag the map to pan.",
 	},
 	{
 		"title": "Pause or reset",

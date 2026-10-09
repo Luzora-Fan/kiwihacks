@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://Scripts/MenuOverlay.gd" id="1_menu"]
 [ext_resource type="Theme" path="res://Data/GameTheme.tres" id="2_button_theme"]
@@ -9,7 +9,7 @@
 [ext_resource type="FontFile" path="res://Data/Nasalization Rg.otf" id="7_title_font"]
 
 [sub_resource type="StyleBoxFlat" id="MenuCardStyle"]
-bg_color = Color(0.045, 0.05, 0.065, 0.98)
+bg_color = Color(0.045, 0.05, 0.065, 0.82)
 border_color = Color(0.34, 0.38, 0.42, 1)
 border_width_left = 1
 border_width_top = 1
@@ -68,6 +68,8 @@ content_margin_top = 7.0
 content_margin_right = 10.0
 content_margin_bottom = 7.0
 region_rect = Rect2(0, 8, 32, 16)
+
+[sub_resource type="StyleBoxEmpty" id="FullscreenToggleStyle"]
 
 [node name="MenuOverlay" type="Control"]
 layout_mode = 3
@@ -146,11 +148,11 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Card/Pages/MainPage"]
-custom_minimum_size = Vector2(0, 36)
+custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.72, 0.75, 0.78, 1)
 theme_override_font_sizes/font_size = 12
-text = "A planet recovery prototype\nSurvey worlds. Bring resources home."
+text = "Survey worlds. Bring resources home."
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -246,6 +248,11 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.82, 0.84, 0.86, 1)
+theme_override_styles/normal = SubResource("FullscreenToggleStyle")
+theme_override_styles/hover = SubResource("FullscreenToggleStyle")
+theme_override_styles/pressed = SubResource("FullscreenToggleStyle")
+theme_override_styles/hover_pressed = SubResource("FullscreenToggleStyle")
+theme_override_styles/disabled = SubResource("FullscreenToggleStyle")
 text = "Fullscreen"
 
 [node name="ResetProgressButton" type="Button" parent="Card/Pages/SettingsPage"]
@@ -286,7 +293,7 @@ custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.8, 0.82, 1)
 theme_override_font_sizes/font_size = 13
-text = "Click a planet to select it\nDrag the map to pan\nTurn on Follow rocket to track the ship\nUse Launch survey to visit new worlds\nUse the sidebar to upgrade fuel or restore Earth\nPress Escape to pause or resume"
+text = "Click a planet to select it\nDrag the map to pan\nTurn on Follow rocket to track the fleet\nLaunch missions from the sidebar\nPress E or click Land at a planet\nStop the marker in green to land\nRed zone crashes cost 20% of credits\nBuy rockets to run missions in parallel\nUpgrade fuel or restore Earth in the sidebar\nPress Escape to pause or resume"
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2

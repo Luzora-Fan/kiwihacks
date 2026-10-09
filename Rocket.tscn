@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="SpriteFrames" path="res://Data/RocketFrames.tres" id="1_rocket_frames"]
+
+[node name="Rocket" type="AnimatedSprite2D"]
+sprite_frames = ExtResource("1_rocket_frames")
+animation = &"default"
+modulate = Color(1.18, 1.28, 1.45, 1)
+texture_filter = 1
