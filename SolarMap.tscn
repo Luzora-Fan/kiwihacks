@@ -207,4 +207,5 @@ offset_bottom = 545.0
 planet_data = ExtResource("14_umbra")
 
 [node name="Rockets" type="Node2D" parent="MapViewport/World"]
+visible = false
 z_index = 3

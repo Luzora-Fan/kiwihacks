@@ -14,4 +14,4 @@ Change the "surveyed" caption around planets to "uninhabitable", with a red bord
 QUICK TIME EVENTS [DONE]
 Add a land button (E) to land on planets that will initiate a perfect time clicker a bar where u have to click at the right time. Land on green = land. Land on red = crash, which makes you lose 20% of your credits. [DONE]
 Death Screen when earth hits 0% [DONE]
-adding aliens with a 30% chance to spawn and fight you WHEN FLYING TO PLANETS and if you lose half your reasources but if you win double (you have to do the clicker bar 4 times and get above 50% win) [DONE]
+Adding aliens with a 30% chance to spawn and fight you WHEN FLYING TO PLANETS and if you lose half your reasources but if you win double (you have to do the clicker bar 4 times and get above 50% win) [DONE]

@@ -102,6 +102,7 @@ func _ready() -> void:
 	menu_overlay.connect("reset_progress_requested", Callable(self, "_on_reset_progress_requested"))
 	_refresh_interface()
 	_update_mission_presentation()
+	solar_map.call("set_rocket_visuals_visible", false)
 	_load_leaderboard()
 	menu_overlay.call("set_leaderboard_runs", leaderboard_runs)
 	menu_overlay.call("set_run_finished", run_finished)
@@ -230,10 +231,12 @@ func _on_planet_selected(planet_id: String) -> void:
 
 func _on_play_requested() -> void:
 	if run_finished:
+		solar_map.call("set_rocket_visuals_visible", false)
 		menu_overlay.call("show_run_result", run_result_record)
 		return
 	game_started = true
 	game_paused = false
+	solar_map.call("set_rocket_visuals_visible", true)
 	_start_pending_alien_challenge()
 	menu_overlay.call("hide_overlay")
 	_refresh_interface()
@@ -242,6 +245,7 @@ func _on_play_requested() -> void:
 
 func _on_resume_requested() -> void:
 	game_paused = false
+	solar_map.call("set_rocket_visuals_visible", true)
 	menu_overlay.call("hide_overlay")
 
 
@@ -249,6 +253,7 @@ func _on_main_menu_requested() -> void:
 	_save_game()
 	game_started = false
 	game_paused = false
+	solar_map.call("set_rocket_visuals_visible", false)
 	menu_overlay.call("show_main_menu")
 
 
@@ -305,8 +310,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if key_event.keycode == KEY_ESCAPE:
 		game_paused = not game_paused
 		if game_paused:
+			solar_map.call("set_rocket_visuals_visible", false)
 			menu_overlay.call("show_pause_menu")
 		else:
+			solar_map.call("set_rocket_visuals_visible", true)
 			menu_overlay.call("hide_overlay")
 		get_viewport().set_input_as_handled()
 	elif key_event.keycode == KEY_E and not game_paused:
@@ -607,6 +614,7 @@ func _finish_run(won: bool) -> void:
 
 	game_started = false
 	game_paused = false
+	solar_map.call("set_rocket_visuals_visible", false)
 	var planets_scanned := scanned_planet_ids.size()
 	var elapsed_seconds := roundi(run_elapsed_seconds)
 	var score := _run_score(planets_scanned, credits, earth_health, elapsed_seconds, won)

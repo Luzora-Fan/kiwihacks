@@ -95,6 +95,11 @@ func set_camera_locked_to_ship(locked: bool) -> void:
 	_center_camera_on_position(target_position)
 
 
+func set_rocket_visuals_visible(should_be_visible: bool) -> void:
+	# Keep active mission sprites out of translucent menus and result screens.
+	rocket_container.visible = should_be_visible
+
+
 func reset_camera_view() -> void:
 	# Let the next map update frame Earth and the selected starting planet again.
 	_initial_view_framed = false
