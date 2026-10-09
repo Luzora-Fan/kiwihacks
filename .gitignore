@@ -4,3 +4,4 @@
 
 # IDE specific ignores
 .vscode/
+/Build/
