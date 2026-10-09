@@ -631,7 +631,6 @@ func _refresh_interface() -> void:
 	earth_health_value.text = "%d%%" % roundi(earth_health)
 	earth_header_value.text = earth_health_value.text
 	earth_progress_bar.value = earth_health
-	solar_map.call("set_earth_health", earth_health)
 	if earth_health > 65.0:
 		earth_status_value.text = "Atmosphere holding · sale efficiency %d%%." % roundi(_recovery_efficiency() * 100.0)
 	elif earth_health > 30.0:
