@@ -7,6 +7,9 @@ const MAX_ROCKETS := 5
 const SAVE_PATH := "user://earthward_save.json"
 const LEADERBOARD_PATH := "user://earthward_leaderboard.json"
 const MAX_LEADERBOARD_RUNS := 10
+const ALIEN_SPAWN_CHANCE := 0.30
+const ALIEN_FIGHT_ROUNDS := 4
+const ALIEN_HITS_TO_WIN := 3
 const SAVE_INTERVAL := 12.0
 const CLIMATE_DECAY_PER_SECOND := 0.1 # Earth loses six health points per active minute.
 const SURVEY_DURATION := 4.5
@@ -39,6 +42,7 @@ const LANDING_SWEEP_TIME := 1.25
 @onready var mission_progress_bar: ProgressBar = $SidebarScroll/PanelStack/MissionPanel/Content/Progress
 @onready var mission_feed_value: Label = $SidebarScroll/PanelStack/MissionPanel/Content/Feed
 @onready var landing_challenge_panel: Control = $SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge
+@onready var alien_sprite: TextureRect = $SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge/AlienSprite
 @onready var landing_hint: Label = $SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge/Hint
 @onready var landing_track: Control = $SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge/TimingTrack
 @onready var landing_marker: ColorRect = $SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge/TimingTrack/Marker
@@ -125,7 +129,10 @@ func _process(delta: float) -> void:
 		_finish_run(false)
 		return
 
-	if _advance_missions(delta):
+	var missions_changed := _advance_missions(delta)
+	if _start_pending_alien_challenge():
+		missions_changed = true
+	if missions_changed:
 		_save_game()
 		_refresh_interface()
 	if _check_for_victory():
@@ -195,10 +202,14 @@ func _has_mission_for_planet(planet_id: String) -> bool:
 func _landing_target_mission() -> Dictionary:
 	if landing_rocket_id >= 0:
 		var active_landing := _mission_for_rocket(landing_rocket_id)
-		if not active_landing.is_empty():
+		var active_phase := String(active_landing.get("phase", ""))
+		if active_phase == "landing_qte" or active_phase == "alien_combat":
 			return active_landing
 	for mission in active_missions:
 		if String(mission.get("phase", "")) == "awaiting_landing":
+			return mission
+	for mission in active_missions:
+		if String(mission.get("phase", "")) == "alien_combat":
 			return mission
 	return {}
 
@@ -223,6 +234,7 @@ func _on_play_requested() -> void:
 		return
 	game_started = true
 	game_paused = false
+	_start_pending_alien_challenge()
 	menu_overlay.call("hide_overlay")
 	_refresh_interface()
 	_update_mission_presentation()
@@ -332,6 +344,8 @@ func _on_primary_pressed() -> void:
 		"crates": 0,
 		"cargo_resource": "",
 		"research_bonus": 0,
+		"resource_multiplier": 1.0,
+		"alien_pending": rng.randf() < ALIEN_SPAWN_CHANCE,
 	}
 	next_rocket_id += 1
 	active_missions.append(mission)
@@ -339,6 +353,7 @@ func _on_primary_pressed() -> void:
 		mission_feed = "Free rocket launched to harvest another cache from %s." % planet["name"]
 	else:
 		mission_feed = "Survey ship dispatched to %s. Cargo is sold on return." % planet["name"]
+	_start_pending_alien_challenge()
 	_save_game()
 	_refresh_interface()
 
@@ -379,6 +394,9 @@ func _on_land_pressed() -> void:
 		landing_audio_player.play()
 	elif phase == "landing_qte":
 		_resolve_landing_challenge(mission_index, mission)
+	elif phase == "alien_combat":
+		_resolve_alien_challenge(mission_index, mission)
+	_start_pending_alien_challenge()
 	_save_game()
 	_update_mission_presentation()
 	_update_landing_challenge()
@@ -391,11 +409,7 @@ func _resolve_landing_challenge(mission_index: int, mission: Dictionary) -> void
 	landing_qte_elapsed = 0.0
 
 	if landing_marker_position >= LANDING_GREEN_START and landing_marker_position <= LANDING_GREEN_END:
-		mission["phase"] = "scanning"
-		var scan_duration := PROBE_DURATION if bool(mission["is_probe"]) else SURVEY_DURATION
-		mission["duration"] = scan_duration
-		mission["time_left"] = scan_duration
-		active_missions[mission_index] = mission
+		_start_scanning(mission_index, mission)
 		mission_feed = "Safe landing on %s. Scanning and extraction started." % planet.get("name", "the planet")
 		return
 
@@ -405,6 +419,79 @@ func _resolve_landing_challenge(mission_index: int, mission: Dictionary) -> void
 	active_missions.remove_at(mission_index)
 	solar_map.call("shake_screen", 8.0)
 	mission_feed = "Rocket crashed at %s. Lost CR %d." % [planet.get("name", "the planet"), lost_credits]
+
+
+func _begin_alien_combat(mission_index: int, mission: Dictionary) -> void:
+	# Pause the outbound flight until the four strike encounter is resolved.
+	mission["phase_before_alien"] = String(mission.get("phase", "outbound"))
+	mission["phase"] = "alien_combat"
+	mission["alien_pending"] = false
+	mission["alien_attempts"] = 0
+	mission["alien_hits"] = 0
+	active_missions[mission_index] = mission
+	landing_rocket_id = int(mission["rocket_id"])
+	landing_qte_elapsed = 0.0
+	landing_marker_position = 0.0
+	mission_feed = "An alien intercepted the rocket en route to %s. Hit green on 3 of 4 strikes to win." % _planet_by_id(String(mission["planet_id"])).get("name", "the planet")
+
+
+func _start_scanning(mission_index: int, mission: Dictionary) -> void:
+	# The same scan duration applies whether or not an alien encounter happened.
+	mission["phase"] = "scanning"
+	var scan_duration := PROBE_DURATION if bool(mission["is_probe"]) else SURVEY_DURATION
+	mission["duration"] = scan_duration
+	mission["time_left"] = scan_duration
+	active_missions[mission_index] = mission
+
+
+func _resolve_alien_challenge(mission_index: int, mission: Dictionary) -> void:
+	var hit := landing_marker_position >= LANDING_GREEN_START and landing_marker_position <= LANDING_GREEN_END
+	var attempts := int(mission.get("alien_attempts", 0)) + 1
+	var hits := int(mission.get("alien_hits", 0)) + (1 if hit else 0)
+	mission["alien_attempts"] = attempts
+	mission["alien_hits"] = hits
+
+	if attempts < ALIEN_FIGHT_ROUNDS:
+		active_missions[mission_index] = mission
+		landing_qte_elapsed = 0.0
+		landing_marker_position = 0.0
+		mission_feed = "Strike hit. %d of 4 landed in the green zone." % hits if hit else "Strike missed. %d of 4 landed in the green zone." % hits
+		return
+
+	landing_rocket_id = -1
+	landing_qte_elapsed = 0.0
+	mission["resource_multiplier"] = 2.0 if hits >= ALIEN_HITS_TO_WIN else 0.5
+	mission["phase"] = String(mission.get("phase_before_alien", "outbound"))
+	mission.erase("phase_before_alien")
+	mission["alien_attempts"] = 0
+	mission["alien_hits"] = 0
+	active_missions[mission_index] = mission
+	if hits >= ALIEN_HITS_TO_WIN:
+		mission_feed = "Alien defeated. Resources from this survey will be doubled."
+	else:
+		mission_feed = "Alien fight lost. Resources from this survey will be halved."
+	_start_pending_alien_challenge()
+
+
+func _start_pending_alien_challenge() -> bool:
+	# Continue a saved fight before starting queued encounters or landing challenges.
+	if landing_rocket_id >= 0:
+		return false
+	for mission in active_missions:
+		if String(mission.get("phase", "")) == "alien_combat":
+			landing_rocket_id = int(mission["rocket_id"])
+			landing_marker_position = _landing_marker_at(landing_qte_elapsed)
+			return true
+	for mission in active_missions:
+		if String(mission.get("phase", "")) == "awaiting_landing":
+			return false
+	for index in range(active_missions.size()):
+		var mission: Dictionary = active_missions[index]
+		if String(mission.get("phase", "")) != "outbound" or not bool(mission.get("alien_pending", false)):
+			continue
+		_begin_alien_combat(index, mission)
+		return true
+	return false
 
 
 func _flight_duration(distance: float) -> float:
@@ -418,11 +505,16 @@ func _advance_missions(delta: float) -> bool:
 		var mission: Dictionary = active_missions[index]
 		var phase := String(mission.get("phase", ""))
 		if ["outbound", "scanning", "returning"].has(phase):
+			var previous_time_left := float(mission.get("time_left", 0.0))
 			mission["time_left"] = maxf(0.0, float(mission.get("time_left", 0.0)) - delta)
 			active_missions[index] = mission
 			if float(mission["time_left"]) <= 0.0:
-				_advance_mission_at(index, mission)
-				changed = true
+				if phase == "outbound" and bool(mission.get("alien_pending", false)):
+					# Hold arrival until this rocket's queued encounter gets its turn.
+					changed = changed or (previous_time_left > 0.0)
+				else:
+					_advance_mission_at(index, mission)
+					changed = true
 		index -= 1
 	return changed
 
@@ -482,11 +574,17 @@ func _finish_scan(mission: Dictionary) -> Dictionary:
 		mission["cargo_resource"] = String(planet["resource"])
 		if not scanned_planet_ids.has(String(mission["planet_id"])):
 			scanned_planet_ids.append(String(mission["planet_id"]))
+
+	var resource_multiplier := float(mission.get("resource_multiplier", 1.0))
+	if resource_multiplier < 1.0:
+		mission["crates"] = floori(float(mission["crates"]) * resource_multiplier)
+	else:
+		mission["crates"] = roundi(float(mission["crates"]) * resource_multiplier)
+	if not bool(mission["is_probe"]):
 		planet_reports[String(mission["planet_id"])] = "No safe settlement conditions. %d crates of %s secured." % [
 			int(mission["crates"]),
 			String(planet["resource"]),
 		]
-
 	var cargo_value := int(mission["crates"]) * int(planet["crate_price"])
 	mission["reward"] = roundi(float(cargo_value + int(mission["research_bonus"])) * _recovery_efficiency())
 	return mission
@@ -511,10 +609,7 @@ func _finish_run(won: bool) -> void:
 	game_paused = false
 	var planets_scanned := scanned_planet_ids.size()
 	var elapsed_seconds := roundi(run_elapsed_seconds)
-	var speed_bonus := maxi(0, 3600 - elapsed_seconds)
-	var score := planets_scanned * 10000 + credits + roundi(earth_health * 100.0) + speed_bonus
-	if won:
-		score += 100000
+	var score := _run_score(planets_scanned, credits, earth_health, elapsed_seconds, won)
 
 	run_result_record = {
 		"outcome": "WIN" if won else "EARTH LOST",
@@ -541,6 +636,16 @@ func _finish_run(won: bool) -> void:
 	menu_overlay.call("show_run_result", run_result_record)
 
 
+func _run_score(planets_scanned: int, remaining_credits: int, final_earth_health: float, elapsed_seconds: int, won: bool) -> int:
+	# Reward exploration, Earth's condition, saved credits, and faster runs.
+	var speed_bonus := maxi(0, 3600 - maxi(0, elapsed_seconds))
+	var score := maxi(0, planets_scanned) * 10000
+	score += maxi(0, remaining_credits) + roundi(clampf(final_earth_health, 0.0, 100.0) * 100.0) + speed_bonus
+	if won:
+		score += 100000
+	return score
+
+
 func _save_leaderboard() -> void:
 	# Run records survive progress resets so players can compare expeditions.
 	var file := FileAccess.open(LEADERBOARD_PATH, FileAccess.WRITE)
@@ -560,18 +665,36 @@ func _load_leaderboard() -> void:
 		return
 	var parsed_data: Variant = JSON.parse_string(file.get_as_text())
 	file.close()
-	if not parsed_data is Array:
+	var saved_runs: Array = []
+	if parsed_data is Array:
+		saved_runs = parsed_data
+	elif parsed_data is Dictionary:
+		# Accept the brief ordinal-label format while returning to the ranked list format.
+		var runs_value: Variant = parsed_data.get("runs", [])
+		if runs_value is Array:
+			saved_runs = runs_value
+	else:
 		push_warning("Earthward leaderboard is invalid. It will be replaced after the next run.")
 		return
-	for saved_record in parsed_data:
-		if saved_record is Dictionary:
-			leaderboard_runs.append(saved_record)
+	for saved_record in saved_runs:
+		if not saved_record is Dictionary:
+			continue
+		var record: Dictionary = saved_record.duplicate()
+		record.erase("win_number")
+		var won := String(record.get("outcome", "")) == "WIN"
+		record["score"] = _run_score(
+			int(record.get("planets_scanned", 0)),
+			int(record.get("credits", 0)),
+			float(record.get("earth_health", 0.0)),
+			int(record.get("elapsed_seconds", 0)),
+			won
+		)
+		leaderboard_runs.append(record)
 	leaderboard_runs.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 		return int(a.get("score", 0)) > int(b.get("score", 0))
 	)
 	if leaderboard_runs.size() > MAX_LEADERBOARD_RUNS:
 		leaderboard_runs.resize(MAX_LEADERBOARD_RUNS)
-
 
 func _recovery_efficiency() -> float:
 	# A healthier Earth makes returned cargo more valuable.
@@ -589,25 +712,34 @@ func _update_landing_challenge() -> void:
 	var mission := _landing_target_mission()
 	if mission.is_empty():
 		landing_challenge_panel.visible = false
+		alien_sprite.visible = false
 		land_button.visible = false
 		return
 
 	landing_challenge_panel.visible = true
 	land_button.visible = true
+	var phase := String(mission["phase"])
+	var is_alien_fight := phase == "alien_combat"
+	alien_sprite.visible = is_alien_fight
 	var planet := _planet_by_id(String(mission["planet_id"]))
 	var planet_name := String(planet.get("name", "planet"))
-	var phase := String(mission["phase"])
 	if phase == "landing_qte":
 		landing_hint.text = "Press E or click Land while the marker is in the green zone."
 		land_button.text = "Land now"
 		landing_marker.visible = true
-		var marker_width := landing_marker.size.x
-		var travel_width := maxf(0.0, landing_track.size.x - marker_width)
-		landing_marker.position.x = travel_width * landing_marker_position
+	elif is_alien_fight:
+		var next_round := int(mission.get("alien_attempts", 0)) + 1
+		landing_hint.text = "Alien intercept near %s. Round %d of 4. Hit green 3 times to win." % [planet_name, next_round]
+		land_button.text = "Strike now"
+		landing_marker.visible = true
 	else:
 		landing_hint.text = "Arrival at %s. Press E or click Start landing." % planet_name
 		land_button.text = "Start landing"
 		landing_marker.visible = false
+	if phase == "landing_qte" or is_alien_fight:
+		var marker_width := landing_marker.size.x
+		var travel_width := maxf(0.0, landing_track.size.x - marker_width)
+		landing_marker.position.x = travel_width * landing_marker_position
 
 
 func _update_mission_presentation() -> void:
@@ -621,7 +753,7 @@ func _update_mission_presentation() -> void:
 
 func _mission_phase_progress(mission: Dictionary) -> float:
 	var phase := String(mission.get("phase", ""))
-	if phase == "awaiting_landing" or phase == "landing_qte":
+	if phase == "awaiting_landing" or phase == "landing_qte" or phase == "alien_combat":
 		return 1.0
 	var duration := float(mission.get("duration", 0.0))
 	if duration <= 0.0:
@@ -729,6 +861,9 @@ func _refresh_interface() -> void:
 			"landing_qte":
 				mission_phase_value.text = "Landing challenge"
 				mission_detail_value.text = "Stop the marker in the green zone."
+			"alien_combat":
+				mission_phase_value.text = "Alien encounter"
+				mission_detail_value.text = "Win 3 of 4 strikes to double cargo. Otherwise, cargo is halved."
 			"scanning":
 				mission_phase_value.text = "Scanning %s" % planet_name
 				mission_detail_value.text = "Scanning and collecting resources."
@@ -805,7 +940,7 @@ func _save_game() -> void:
 		return
 
 	var save_data := {
-		"save_version": 4,
+		"save_version": 5,
 		"credits": credits,
 		"earth_health": earth_health,
 		"fuel_tier": fuel_tier,
@@ -885,7 +1020,8 @@ func _load_game() -> void:
 	landing_qte_elapsed = maxf(0.0, float(save_data.get("landing_qte_elapsed", 0.0)))
 
 	var active_landing := _mission_for_rocket(landing_rocket_id)
-	if active_landing.is_empty() or String(active_landing.get("phase", "")) != "landing_qte":
+	var active_landing_phase := String(active_landing.get("phase", ""))
+	if active_landing.is_empty() or not ["landing_qte", "alien_combat"].has(active_landing_phase):
 		landing_rocket_id = -1
 		landing_qte_elapsed = 0.0
 		for index in range(active_missions.size()):
@@ -906,7 +1042,7 @@ func _restore_saved_mission(saved_mission: Dictionary, used_rocket_ids: Dictiona
 		return
 	var planet_id := String(saved_mission.get("planet_id", ""))
 	var phase := String(saved_mission.get("phase", ""))
-	var valid_phases := ["outbound", "awaiting_landing", "landing_qte", "scanning", "returning"]
+	var valid_phases := ["outbound", "awaiting_landing", "landing_qte", "alien_combat", "scanning", "returning"]
 	if _planet_by_id(planet_id).is_empty() or not valid_phases.has(phase):
 		return
 
@@ -930,6 +1066,11 @@ func _restore_saved_mission(saved_mission: Dictionary, used_rocket_ids: Dictiona
 		"crates": maxi(0, int(saved_mission.get("crates", 0))),
 		"cargo_resource": String(saved_mission.get("cargo_resource", "")),
 		"research_bonus": maxi(0, int(saved_mission.get("research_bonus", 0))),
+		"resource_multiplier": float(saved_mission.get("resource_multiplier", 1.0)),
+		"alien_pending": bool(saved_mission.get("alien_pending", false)),
+		"phase_before_alien": String(saved_mission.get("phase_before_alien", "outbound")),
+		"alien_attempts": clampi(int(saved_mission.get("alien_attempts", 0)), 0, ALIEN_FIGHT_ROUNDS - 1),
+		"alien_hits": clampi(int(saved_mission.get("alien_hits", 0)), 0, ALIEN_FIGHT_ROUNDS),
 	})
 
 

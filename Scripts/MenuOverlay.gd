@@ -19,7 +19,7 @@ const GUIDE_STEPS := [
 	},
 	{
 		"title": "Launch a survey",
-		"text": "Choose a planet in range and launch a rocket. At the planet, press E or click Land, then stop the marker in the green zone. Red means a crash and costs 20% of your credits.",
+		"text": "Choose a planet in range and launch a rocket. An alien may attack during the outbound flight. Hit green on 3 of 4 strikes to double resources, or miss more than one and lose half. At the planet, press E or click Land, then stop the marker in green. Red means a crash and costs 20% of your credits.",
 	},
 	{
 		"title": "Restore Earth",
@@ -54,7 +54,8 @@ const GUIDE_STEPS := [
 @onready var guide_next_button: Button = $Card/Pages/GuidePage/Navigation/NextButton
 @onready var leaderboard_title: Label = $Card/Pages/LeaderboardPage/Title
 @onready var leaderboard_summary: Label = $Card/Pages/LeaderboardPage/Summary
-@onready var leaderboard_list: ItemList = $Card/Pages/LeaderboardPage/LeaderboardList
+@onready var leaderboard_list: VBoxContainer = $Card/Pages/LeaderboardPage/LeaderboardList
+@onready var leaderboard_empty_message: Label = $Card/Pages/LeaderboardPage/EmptyMessage
 @onready var leaderboard_new_run_button: Button = $Card/Pages/LeaderboardPage/Actions/NewRunButton
 @onready var leaderboard_main_menu_button: Button = $Card/Pages/LeaderboardPage/Actions/MainMenuButton
 @onready var leaderboard_back_button: Button = $Card/Pages/LeaderboardPage/Actions/BackButton
@@ -143,7 +144,7 @@ func show_run_result(record: Dictionary) -> void:
 	if won:
 		leaderboard_summary.text = "Every planet scanned and Earth restored to 100%.\nFinal score %d after %s." % [score, elapsed]
 	else:
-		leaderboard_summary.text = "Earth reached 0% health.\nScore %d with %d of %d planets scanned in %s." % [score, scanned, total, elapsed]
+		leaderboard_summary.text = "Earth reached %d%% health. Score %d with %d of %d planets scanned in %s." % [int(record.get("earth_health", 0)), score, scanned, total, elapsed]
 	leaderboard_new_run_button.visible = true
 	leaderboard_main_menu_button.visible = true
 	leaderboard_back_button.visible = false
@@ -212,7 +213,7 @@ func _open_leaderboard(return_page: String) -> void:
 	# Show past results without changing the current run or its pause state.
 	_return_page = return_page
 	leaderboard_title.text = "HIGH SCORES"
-	leaderboard_summary.text = "Best runs on this device. Records stay after a progress reset."
+	leaderboard_summary.text = "Score includes planets scanned, Earth health, credits, time, and a win bonus."
 	leaderboard_new_run_button.visible = false
 	leaderboard_main_menu_button.visible = false
 	leaderboard_back_button.visible = true
@@ -221,10 +222,17 @@ func _open_leaderboard(return_page: String) -> void:
 
 
 func _refresh_leaderboard() -> void:
-	leaderboard_list.clear()
+	for row in leaderboard_list.get_children():
+		leaderboard_list.remove_child(row)
+		row.queue_free()
+
 	if _leaderboard_runs.is_empty():
-		leaderboard_list.add_item("No completed runs yet.")
+		leaderboard_list.visible = false
+		leaderboard_empty_message.visible = true
 		return
+
+	leaderboard_list.visible = true
+	leaderboard_empty_message.visible = false
 	for index in range(_leaderboard_runs.size()):
 		var run: Dictionary = _leaderboard_runs[index]
 		var elapsed := int(run.get("elapsed_seconds", 0))
@@ -233,16 +241,26 @@ func _refresh_leaderboard() -> void:
 		var outcome := String(run.get("outcome", "RUN"))
 		var scanned := int(run.get("planets_scanned", 0))
 		var total := int(run.get("planet_total", 0))
-		var row := "%02d  %s  %7d  %d/%d  %02d:%02d" % [
-			index + 1,
-			outcome,
-			int(run.get("score", 0)),
-			scanned,
-			total,
-			minutes,
-			seconds,
-		]
-		leaderboard_list.add_item(row)
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		leaderboard_list.add_child(row)
+		row.add_child(_make_leaderboard_cell("%02d" % (index + 1), 38.0, HORIZONTAL_ALIGNMENT_LEFT))
+		row.add_child(_make_leaderboard_cell(outcome, 90.0, HORIZONTAL_ALIGNMENT_LEFT))
+		row.add_child(_make_leaderboard_cell("%d" % int(run.get("score", 0)), 82.0, HORIZONTAL_ALIGNMENT_RIGHT))
+		row.add_child(_make_leaderboard_cell("%d/%d" % [scanned, total], 86.0, HORIZONTAL_ALIGNMENT_RIGHT))
+		row.add_child(_make_leaderboard_cell("%02d:%02d" % [minutes, seconds], 68.0, HORIZONTAL_ALIGNMENT_RIGHT))
+
+
+func _make_leaderboard_cell(value: String, minimum_width: float, alignment: int) -> Label:
+	var cell := Label.new()
+	cell.text = value
+	cell.custom_minimum_size = Vector2(minimum_width, 20.0)
+	cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	cell.horizontal_alignment = alignment
+	cell.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	cell.add_theme_font_size_override("font_size", 12)
+	return cell
 
 
 func _format_run_time(seconds: int) -> String:

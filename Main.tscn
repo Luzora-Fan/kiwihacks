@@ -10,6 +10,7 @@
 [ext_resource type="Environment" path="res://SpaceEnvironment.tres" id="8_environment"]
 [ext_resource type="Theme" path="res://Data/GameTheme.tres" id="9_button_theme"]
 [ext_resource type="FontFile" path="res://Data/Nasalization Rg.otf" id="10_heading_font"]
+[ext_resource type="Texture2D" path="res://Textures/alien.png" id="11_alien"]
 
 [sub_resource type="StyleBoxFlat" id="HeaderStyle"]
 content_margin_left = 16.0
@@ -419,6 +420,16 @@ visible = false
 custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
 theme_override_constants/separation = 4
+
+[node name="AlienSprite" type="TextureRect" parent="SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge"]
+visible = false
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+texture = ExtResource("11_alien")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+mouse_filter = 2
 
 [node name="Hint" type="Label" parent="SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge"]
 custom_minimum_size = Vector2(0, 28)

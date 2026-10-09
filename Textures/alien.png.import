@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bj40jfshod7bo"
-path="res://.godot/imported/Earth.png-8617f26405a48ace532a8ab53f85ad90.ctex"
+uid="uid://dge3kurhfcut0"
+path="res://.godot/imported/alien.png-b396181f5948676467f0f14cb33014fa.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Textures/Planets/Earth.png"
-dest_files=["res://.godot/imported/Earth.png-8617f26405a48ace532a8ab53f85ad90.ctex"]
+source_file="res://Textures/alien.png"
+dest_files=["res://.godot/imported/alien.png-b396181f5948676467f0f14cb33014fa.ctex"]
 
 [params]
 
