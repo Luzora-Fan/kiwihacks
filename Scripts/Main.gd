@@ -374,6 +374,7 @@ func _resolve_landing_challenge(mission_index: int, mission: Dictionary) -> void
 	var lost_credits := roundi(float(credits) * 0.2)
 	credits = maxi(0, credits - lost_credits)
 	active_missions.remove_at(mission_index)
+	solar_map.call("shake_screen", 8.0)
 	mission_feed = "Rocket crashed at %s. Lost CR %d." % [planet.get("name", "the planet"), lost_credits]
 
 

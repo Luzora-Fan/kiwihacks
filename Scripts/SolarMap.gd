@@ -3,6 +3,7 @@ extends Control
 signal planet_selected(planet_id: String)
 
 const ROCKET_SCENE := preload("res://Rocket.tscn")
+const SHAKE_DURATION := 0.32
 
 @onready var world: Control = $MapViewport/World
 @onready var marker_container: Control = $MapViewport/World/PlanetMarkers
@@ -17,6 +18,10 @@ var scanned_ids: Array[String] = []
 var fuel_range := 260.0
 var camera_locked_to_ship := false
 var _initial_view_framed := false
+var _camera_position := Vector2.ZERO
+var _shake_time_left := 0.0
+var _shake_strength := 0.0
+var _shake_offset := Vector2.ZERO
 
 var _pointer_down := false
 var _dragging := false
@@ -25,6 +30,7 @@ var _press_candidate := ""
 
 
 func _ready() -> void:
+	_camera_position = world.position
 	# Build the catalog from planet markers already placed in SolarMap.tscn.
 	for marker in marker_container.get_children():
 		var marker_data: Dictionary = marker.call("get_planet_data")
@@ -38,6 +44,21 @@ func _ready() -> void:
 		planet_data.append(marker_data)
 	_fit_world_to_markers()
 	_clamp_pan()
+
+
+func _process(delta: float) -> void:
+	# Keep the temporary shake separate from camera movement and map dragging.
+	if _shake_time_left > 0.0:
+		_shake_time_left = maxf(0.0, _shake_time_left - delta)
+		var fade := _shake_time_left / SHAKE_DURATION
+		_shake_offset = Vector2(
+			randf_range(-1.0, 1.0),
+			randf_range(-1.0, 1.0)
+		) * _shake_strength * fade
+	else:
+		_shake_strength = 0.0
+		_shake_offset = Vector2.ZERO
+	_apply_world_position()
 
 
 func get_planet_catalog() -> Array[Dictionary]:
@@ -61,6 +82,12 @@ func reset_camera_view() -> void:
 	_initial_view_framed = false
 
 
+func shake_screen(intensity: float = 8.0) -> void:
+	# Shake the map view briefly after an impact without moving the HUD.
+	_shake_time_left = SHAKE_DURATION
+	_shake_strength = maxf(0.0, intensity)
+
+
 func configure(
 	planet_catalog: Array[Dictionary],
 	selected_planet: String,
@@ -76,7 +103,7 @@ func configure(
 		var target_marker: Control = markers[selected_id]
 		var target_center: Vector2 = target_marker.position + target_marker.call("get_body_center")
 		var focus_point := (_earth_center() + target_center) * 0.5
-		world.position = size * 0.5 - focus_point
+		_camera_position = size * 0.5 - focus_point
 		_clamp_pan()
 		_initial_view_framed = true
 	for planet in planet_data:
@@ -167,7 +194,7 @@ func _gui_input(event: InputEvent) -> void:
 		if not _dragging and event.position.distance_to(_press_position) > 6.0:
 			_dragging = true
 		if _dragging and not camera_locked_to_ship:
-			world.position += event.relative
+			_camera_position += event.relative
 			_clamp_pan()
 		accept_event()
 
@@ -189,15 +216,20 @@ func _clamp_pan() -> void:
 	# Keep the world over the viewport while limiting movement to its edges.
 	var minimum_x := minf(0.0, size.x - world.size.x)
 	var minimum_y := minf(0.0, size.y - world.size.y)
-	world.position.x = clampf(world.position.x, minimum_x, 0.0)
-	world.position.y = clampf(world.position.y, minimum_y, 0.0)
+	_camera_position.x = clampf(_camera_position.x, minimum_x, 0.0)
+	_camera_position.y = clampf(_camera_position.y, minimum_y, 0.0)
+	_apply_world_position()
 
 
 func _center_camera_on_position(target_position: Vector2) -> void:
 	if not camera_locked_to_ship or size.x <= 0.0 or size.y <= 0.0:
 		return
-	world.position = size * 0.5 - target_position
+	_camera_position = size * 0.5 - target_position
 	_clamp_pan()
+
+
+func _apply_world_position() -> void:
+	world.position = _camera_position + _shake_offset
 
 
 func _fit_world_to_markers() -> void:
