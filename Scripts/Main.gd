@@ -11,6 +11,9 @@ const PROBE_DURATION := 3.2
 # The scene owns all UI and map nodes. This script updates their state from the expedition data.
 @onready var solar_map: Node = $MapPanel/MapContent/SolarMap
 @onready var menu_overlay: Node = $MenuOverlay
+@onready var flight_audio_player: AudioStreamPlayer = $FlightAudio
+@onready var landing_audio_player: AudioStreamPlayer = $LandingAudio
+@onready var alert_audio_player: AudioStreamPlayer = $AlertAudio
 @onready var credits_value: Label = $Header/Content/CreditsChip/Stack/Value
 @onready var range_value: Label = $Header/Content/RangeChip/Stack/Value
 @onready var ship_value: Label = $Header/Content/ShipChip/Stack/Value
@@ -75,12 +78,17 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
+	_sync_flight_audio()
 	if not game_started or game_paused:
 		return
 
 	# Advance climate and mission clocks every frame, while refreshing text and saving less often.
 	if earth_health > 0.0:
+		var previous_earth_health := earth_health
 		earth_health = maxf(0.0, earth_health - delta * CLIMATE_DECAY_PER_SECOND)
+		# Play the alert once when Earth enters the critical health range.
+		if previous_earth_health > 30.0 and earth_health <= 30.0:
+			alert_audio_player.play()
 
 	if mission_phase != "idle":
 		mission_time_left = maxf(0.0, mission_time_left - delta)
@@ -223,6 +231,8 @@ func _advance_mission() -> void:
 	# Missions always move through outbound, scanning, and returning before paying out cargo.
 	if mission_phase == "outbound":
 		mission_phase = "scanning"
+		# Play the landing cue as the ship reaches its selected world.
+		landing_audio_player.play()
 		mission_duration = PROBE_DURATION if mission_was_probe else SURVEY_DURATION
 		mission_time_left = mission_duration
 		mission_feed = "Ship arrived at %s. Automated scan and extraction started." % _planet_by_id(mission_planet_id)["name"]
@@ -285,6 +295,16 @@ func _update_mission_presentation() -> void:
 	if mission_phase != "idle" and mission_duration > 0.0:
 		progress = clampf(1.0 - mission_time_left / mission_duration, 0.0, 1.0)
 	solar_map.call("set_mission_state", mission_phase, mission_planet_id, progress)
+
+
+func _sync_flight_audio() -> void:
+	# Play the flight sound during transit and stop it while paused or scanning.
+	var is_in_transit := mission_phase == "outbound" or mission_phase == "returning"
+	var should_play := game_started and not game_paused and is_in_transit
+	if should_play and not flight_audio_player.playing:
+		flight_audio_player.play()
+	elif not should_play and flight_audio_player.playing:
+		flight_audio_player.stop()
 
 
 func _refresh_interface() -> void:
