@@ -5,6 +5,11 @@ signal planet_selected(planet_id: String)
 const ROCKET_SCENE := preload("res://Rocket.tscn")
 const SHAKE_DURATION := 0.32
 
+@export var earth_texture_100: Texture2D
+@export var earth_texture_75: Texture2D
+@export var earth_texture_50: Texture2D
+@export var earth_texture_25: Texture2D
+
 @onready var world: Control = $MapViewport/World
 @onready var marker_container: Control = $MapViewport/World/PlanetMarkers
 @onready var rocket_container: Node2D = $MapViewport/World/Rockets
@@ -63,6 +68,19 @@ func _process(delta: float) -> void:
 
 func get_planet_catalog() -> Array[Dictionary]:
 	return planet_data
+
+
+func set_earth_health(health: float) -> void:
+	# Use the authored health artwork at each quarter-health interval.
+	var health_texture := earth_texture_100
+	if health <= 25.0:
+		health_texture = earth_texture_25
+	elif health <= 50.0:
+		health_texture = earth_texture_50
+	elif health <= 75.0:
+		health_texture = earth_texture_75
+	if health_texture != null and earth_sprite.texture != health_texture:
+		earth_sprite.texture = health_texture
 
 
 func set_camera_locked_to_ship(locked: bool) -> void:

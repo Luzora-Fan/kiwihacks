@@ -9,9 +9,8 @@ Money is used to unlock enough fuel to travel to further away planets, but you c
 Money can also be used to spend on the earth and keep the planet alive (it's dying bc climate change) [DONE]
 Maybe add the ability to buy extra rockets and therefore have multiple active rockets at once? [DONE]
 Increase earth depletion rate [DONE (Awaiting review)]
-Add stages of visual decay to earths health as it depletes [WAITING FOR EARTH DECAY TEXTURES]
+Add stages of visual decay to earths health as it depletes [DONE]
 Change the "surveyed" caption around planets to "uninhabitable", with a red border (because of the lore where we are tryna find a new planet until we realise there is no new planet, just earth) [DONE]
 QUICK TIME EVENTS [DONE]
 Add a land button (E) to land on planets that will initiate a perfect time clicker a bar where u have to click at the right time. Land on green = land. Land on red = crash, which makes you lose 20% of your credits. [DONE]
-Death Screen when earth hits 0%
-
+Death Screen when earth hits 0% [DONE]

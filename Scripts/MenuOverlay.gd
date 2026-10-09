@@ -30,8 +30,8 @@ const GUIDE_STEPS := [
 		"text": "A surveyed planet can be visited again with a free rocket. Buy more rockets to run missions at the same time. Turn on Follow rocket to track the fleet, or drag the map to pan.",
 	},
 	{
-		"title": "Pause or reset",
-		"text": "Press Escape to pause or resume. Settings has a Reset progress button that starts your save over after you confirm.",
+		"title": "Win and compare runs",
+		"text": "Scan every planet and restore Earth to 100% to win. Your best runs stay on the leaderboard when you reset progress.",
 	},
 ]
 
@@ -42,6 +42,7 @@ const GUIDE_STEPS := [
 @onready var guide_page: VBoxContainer = $Card/Pages/GuidePage
 @onready var credits_page: VBoxContainer = $Card/Pages/CreditsPage
 @onready var pause_page: VBoxContainer = $Card/Pages/PausePage
+@onready var leaderboard_page: VBoxContainer = $Card/Pages/LeaderboardPage
 @onready var volume_slider: HSlider = $Card/Pages/SettingsPage/VolumeRow/VolumeSlider
 @onready var volume_value: Label = $Card/Pages/SettingsPage/VolumeRow/VolumeValue
 @onready var fullscreen_toggle: CheckButton = $Card/Pages/SettingsPage/FullscreenToggle
@@ -51,10 +52,17 @@ const GUIDE_STEPS := [
 @onready var guide_step_text: Label = $Card/Pages/GuidePage/StepText
 @onready var guide_previous_button: Button = $Card/Pages/GuidePage/Navigation/PreviousButton
 @onready var guide_next_button: Button = $Card/Pages/GuidePage/Navigation/NextButton
+@onready var leaderboard_title: Label = $Card/Pages/LeaderboardPage/Title
+@onready var leaderboard_summary: Label = $Card/Pages/LeaderboardPage/Summary
+@onready var leaderboard_list: ItemList = $Card/Pages/LeaderboardPage/LeaderboardList
+@onready var leaderboard_new_run_button: Button = $Card/Pages/LeaderboardPage/Actions/NewRunButton
+@onready var leaderboard_main_menu_button: Button = $Card/Pages/LeaderboardPage/Actions/MainMenuButton
+@onready var leaderboard_back_button: Button = $Card/Pages/LeaderboardPage/Actions/BackButton
 
 var _return_page := "main"
 var _master_bus_index := -1
 var _current_guide_step := 0
+var _leaderboard_runs: Array[Dictionary] = []
 
 
 func _ready() -> void:
@@ -62,6 +70,7 @@ func _ready() -> void:
 	_load_settings()
 	$Card/Pages/MainPage/PlayButton.pressed.connect(_on_play_pressed)
 	$Card/Pages/MainPage/GuideButton.pressed.connect(_open_guide_from_main)
+	$Card/Pages/MainPage/LeaderboardButton.pressed.connect(_open_leaderboard_from_main)
 	$Card/Pages/MainPage/SettingsButton.pressed.connect(_open_settings_from_main)
 	$Card/Pages/MainPage/ControlsButton.pressed.connect(_open_controls_from_main)
 	$Card/Pages/MainPage/CreditsButton.pressed.connect(_open_credits_from_main)
@@ -76,11 +85,15 @@ func _ready() -> void:
 	$Card/Pages/CreditsPage/BackButton.pressed.connect(_return_to_previous_page)
 	$Card/Pages/PausePage/ResumeButton.pressed.connect(_on_resume_pressed)
 	$Card/Pages/PausePage/GuideButton.pressed.connect(_open_guide_from_pause)
+	$Card/Pages/PausePage/LeaderboardButton.pressed.connect(_open_leaderboard_from_pause)
 	$Card/Pages/PausePage/SettingsButton.pressed.connect(_open_settings_from_pause)
 	$Card/Pages/PausePage/ControlsButton.pressed.connect(_open_controls_from_pause)
 	$Card/Pages/PausePage/CreditsButton.pressed.connect(_open_credits_from_pause)
 	$Card/Pages/PausePage/MainMenuButton.pressed.connect(_on_main_menu_pressed)
 	$Card/Pages/PausePage/QuitButton.pressed.connect(_on_quit_pressed)
+	leaderboard_new_run_button.pressed.connect(_on_leaderboard_new_run_pressed)
+	leaderboard_main_menu_button.pressed.connect(_on_main_menu_pressed)
+	leaderboard_back_button.pressed.connect(_return_to_previous_page)
 	volume_slider.value_changed.connect(_on_volume_changed)
 	volume_slider.drag_ended.connect(_on_volume_drag_ended)
 	volume_slider.focus_exited.connect(_save_settings)
@@ -103,6 +116,42 @@ func hide_overlay() -> void:
 	visible = false
 
 
+func set_run_finished(finished: bool) -> void:
+	# Let players reopen their final results after returning to the main menu.
+	var play_button: Button = $Card/Pages/MainPage/PlayButton
+	play_button.text = "View run results" if finished else "Play"
+
+
+func set_leaderboard_runs(runs: Array) -> void:
+	# Copy records so the menu can redraw its list without owning save data.
+	_leaderboard_runs.clear()
+	for run in runs:
+		if run is Dictionary:
+			_leaderboard_runs.append(run)
+	_refresh_leaderboard()
+
+
+func show_run_result(record: Dictionary) -> void:
+	# The result page also shows earlier runs for an immediate comparison.
+	_return_page = "main"
+	var won := String(record.get("outcome", "")) == "WIN"
+	leaderboard_title.text = "EARTH RESTORED" if won else "RUN ENDED"
+	var score := int(record.get("score", 0))
+	var scanned := int(record.get("planets_scanned", 0))
+	var total := int(record.get("planet_total", 0))
+	var elapsed := _format_run_time(int(record.get("elapsed_seconds", 0)))
+	if won:
+		leaderboard_summary.text = "Every planet scanned and Earth restored to 100%.\nFinal score %d after %s." % [score, elapsed]
+	else:
+		leaderboard_summary.text = "Earth reached 0% health.\nScore %d with %d of %d planets scanned in %s." % [score, scanned, total, elapsed]
+	leaderboard_new_run_button.visible = true
+	leaderboard_main_menu_button.visible = true
+	leaderboard_back_button.visible = false
+	_refresh_leaderboard()
+	visible = true
+	_show_page("leaderboard")
+
+
 func _show_page(page_name: String) -> void:
 	# Pages share one card, with only the requested screen visible at a time.
 	# Keep title art on menu pages, then reveal the game behind the pause overlay.
@@ -113,6 +162,7 @@ func _show_page(page_name: String) -> void:
 	guide_page.visible = page_name == "guide"
 	credits_page.visible = page_name == "credits"
 	pause_page.visible = page_name == "pause"
+	leaderboard_page.visible = page_name == "leaderboard"
 
 
 func _open_settings_from_main() -> void:
@@ -148,6 +198,56 @@ func _open_guide_from_pause() -> void:
 func _open_guide() -> void:
 	_update_guide_step(0)
 	_show_page("guide")
+
+
+func _open_leaderboard_from_main() -> void:
+	_open_leaderboard("main")
+
+
+func _open_leaderboard_from_pause() -> void:
+	_open_leaderboard("pause")
+
+
+func _open_leaderboard(return_page: String) -> void:
+	# Show past results without changing the current run or its pause state.
+	_return_page = return_page
+	leaderboard_title.text = "HIGH SCORES"
+	leaderboard_summary.text = "Best runs on this device. Records stay after a progress reset."
+	leaderboard_new_run_button.visible = false
+	leaderboard_main_menu_button.visible = false
+	leaderboard_back_button.visible = true
+	_refresh_leaderboard()
+	_show_page("leaderboard")
+
+
+func _refresh_leaderboard() -> void:
+	leaderboard_list.clear()
+	if _leaderboard_runs.is_empty():
+		leaderboard_list.add_item("No completed runs yet.")
+		return
+	for index in range(_leaderboard_runs.size()):
+		var run: Dictionary = _leaderboard_runs[index]
+		var elapsed := int(run.get("elapsed_seconds", 0))
+		var minutes := floori(float(elapsed) / 60.0)
+		var seconds := elapsed % 60
+		var outcome := String(run.get("outcome", "RUN"))
+		var scanned := int(run.get("planets_scanned", 0))
+		var total := int(run.get("planet_total", 0))
+		var row := "%02d  %s  %7d  %d/%d  %02d:%02d" % [
+			index + 1,
+			outcome,
+			int(run.get("score", 0)),
+			scanned,
+			total,
+			minutes,
+			seconds,
+		]
+		leaderboard_list.add_item(row)
+
+
+func _format_run_time(seconds: int) -> String:
+	var minutes := floori(float(seconds) / 60.0)
+	return "%02d:%02d" % [minutes, seconds % 60]
 
 
 func _update_guide_step(step_index: int) -> void:
@@ -209,6 +309,11 @@ func _on_reset_progress_pressed() -> void:
 
 
 func _on_reset_progress_confirmed() -> void:
+	reset_progress_requested.emit()
+
+
+func _on_leaderboard_new_run_pressed() -> void:
+	# Starting from the result screen deliberately replaces only the current save.
 	reset_progress_requested.emit()
 
 

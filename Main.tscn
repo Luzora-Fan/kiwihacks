@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bhasiu8bjwrnt"]
 
 [ext_resource type="Script" uid="uid://p1dk8lvjxrda" path="res://Scripts/Main.gd" id="1_main"]
-[ext_resource type="Texture2D" uid="uid://buf0unnxe4dkh" path="res://Textures/background.png" id="2_background"]
+[ext_resource type="Texture2D" uid="uid://buf0unnxe4dkh" path="res://Textures/Backgrounds/background.png" id="2_background"]
 [ext_resource type="PackedScene" path="res://SolarMap.tscn" id="3_map"]
 [ext_resource type="PackedScene" path="res://MenuOverlay.tscn" id="4_menu"]
 [ext_resource type="AudioStream" uid="uid://c581wd57to5et" path="res://Audio/ufoflying.mp3" id="5_flight"]

@@ -5,6 +5,8 @@ const FUEL_RANGE_PER_TANK := 260.0
 const ROCKET_COSTS: Array[int] = [300, 500, 750, 1000]
 const MAX_ROCKETS := 5
 const SAVE_PATH := "user://earthward_save.json"
+const LEADERBOARD_PATH := "user://earthward_leaderboard.json"
+const MAX_LEADERBOARD_RUNS := 10
 const SAVE_INTERVAL := 12.0
 const CLIMATE_DECAY_PER_SECOND := 0.1 # Earth loses six health points per active minute.
 const SURVEY_DURATION := 4.5
@@ -72,6 +74,10 @@ var _save_clock := 0.0
 # The menu pauses all simulation clocks until the player starts or resumes a run.
 var game_started := false
 var game_paused := false
+var run_elapsed_seconds := 0.0
+var run_finished := false
+var run_result_record: Dictionary = {}
+var leaderboard_runs: Array[Dictionary] = []
 
 
 func _ready() -> void:
@@ -92,6 +98,15 @@ func _ready() -> void:
 	menu_overlay.connect("reset_progress_requested", Callable(self, "_on_reset_progress_requested"))
 	_refresh_interface()
 	_update_mission_presentation()
+	_load_leaderboard()
+	menu_overlay.call("set_leaderboard_runs", leaderboard_runs)
+	menu_overlay.call("set_run_finished", run_finished)
+	if run_finished:
+		menu_overlay.call("show_run_result", run_result_record)
+	elif earth_health <= 0.0:
+		_finish_run(false)
+	else:
+		_check_for_victory()
 
 
 func _process(delta: float) -> void:
@@ -100,15 +115,21 @@ func _process(delta: float) -> void:
 		return
 
 	# Advance climate, mission clocks, and the active landing marker.
+	run_elapsed_seconds += delta
 	if earth_health > 0.0:
 		var previous_earth_health := earth_health
 		earth_health = maxf(0.0, earth_health - delta * CLIMATE_DECAY_PER_SECOND)
 		if previous_earth_health > 30.0 and earth_health <= 30.0:
 			alert_audio_player.play()
+	if earth_health <= 0.0:
+		_finish_run(false)
+		return
 
 	if _advance_missions(delta):
 		_save_game()
 		_refresh_interface()
+	if _check_for_victory():
+		return
 
 	if landing_rocket_id >= 0:
 		landing_qte_elapsed += delta
@@ -197,6 +218,9 @@ func _on_planet_selected(planet_id: String) -> void:
 
 
 func _on_play_requested() -> void:
+	if run_finished:
+		menu_overlay.call("show_run_result", run_result_record)
+		return
 	game_started = true
 	game_paused = false
 	menu_overlay.call("hide_overlay")
@@ -240,6 +264,9 @@ func _on_reset_progress_requested() -> void:
 	landing_rocket_id = -1
 	landing_qte_elapsed = 0.0
 	landing_marker_position = 0.0
+	run_elapsed_seconds = 0.0
+	run_finished = false
+	run_result_record.clear()
 	mission_feed = "Choose a destination and send a rocket."
 	_ui_refresh_clock = 0.0
 	_save_clock = 0.0
@@ -251,6 +278,8 @@ func _on_reset_progress_requested() -> void:
 	_refresh_interface()
 	_update_mission_presentation()
 	_save_game()
+	menu_overlay.call("set_run_finished", false)
+	menu_overlay.call("set_leaderboard_runs", leaderboard_runs)
 	menu_overlay.call("show_main_menu")
 
 
@@ -463,6 +492,87 @@ func _finish_scan(mission: Dictionary) -> Dictionary:
 	return mission
 
 
+func _check_for_victory() -> bool:
+	# The win condition uses the current authored planet catalog, including new planets.
+	if run_finished or planet_data.is_empty():
+		return false
+	if scanned_planet_ids.size() < planet_data.size() or earth_health < 100.0:
+		return false
+	_finish_run(true)
+	return true
+
+
+func _finish_run(won: bool) -> void:
+	# Save each completed run once while keeping run history separate from progress.
+	if run_finished:
+		return
+
+	game_started = false
+	game_paused = false
+	var planets_scanned := scanned_planet_ids.size()
+	var elapsed_seconds := roundi(run_elapsed_seconds)
+	var speed_bonus := maxi(0, 3600 - elapsed_seconds)
+	var score := planets_scanned * 10000 + credits + roundi(earth_health * 100.0) + speed_bonus
+	if won:
+		score += 100000
+
+	run_result_record = {
+		"outcome": "WIN" if won else "EARTH LOST",
+		"score": score,
+		"planets_scanned": planets_scanned,
+		"planet_total": planet_data.size(),
+		"earth_health": roundi(earth_health),
+		"credits": credits,
+		"elapsed_seconds": elapsed_seconds,
+		"date": Time.get_datetime_string_from_system(false, false),
+	}
+	run_finished = true
+	leaderboard_runs.append(run_result_record.duplicate())
+	leaderboard_runs.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return int(a.get("score", 0)) > int(b.get("score", 0))
+	)
+	if leaderboard_runs.size() > MAX_LEADERBOARD_RUNS:
+		leaderboard_runs.resize(MAX_LEADERBOARD_RUNS)
+	_save_leaderboard()
+	_save_game()
+	_refresh_interface()
+	menu_overlay.call("set_run_finished", true)
+	menu_overlay.call("set_leaderboard_runs", leaderboard_runs)
+	menu_overlay.call("show_run_result", run_result_record)
+
+
+func _save_leaderboard() -> void:
+	# Run records survive progress resets so players can compare expeditions.
+	var file := FileAccess.open(LEADERBOARD_PATH, FileAccess.WRITE)
+	if file == null:
+		push_warning("Could not save Earthward leaderboard: %s" % error_string(FileAccess.get_open_error()))
+		return
+	file.store_string(JSON.stringify(leaderboard_runs))
+	file.close()
+
+
+func _load_leaderboard() -> void:
+	if not FileAccess.file_exists(LEADERBOARD_PATH):
+		return
+	var file := FileAccess.open(LEADERBOARD_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("Could not read Earthward leaderboard: %s" % error_string(FileAccess.get_open_error()))
+		return
+	var parsed_data: Variant = JSON.parse_string(file.get_as_text())
+	file.close()
+	if not parsed_data is Array:
+		push_warning("Earthward leaderboard is invalid. It will be replaced after the next run.")
+		return
+	for saved_record in parsed_data:
+		if saved_record is Dictionary:
+			leaderboard_runs.append(saved_record)
+	leaderboard_runs.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
+		return int(a.get("score", 0)) > int(b.get("score", 0))
+	)
+	if leaderboard_runs.size() > MAX_LEADERBOARD_RUNS:
+		leaderboard_runs.resize(MAX_LEADERBOARD_RUNS)
+
+
 func _recovery_efficiency() -> float:
 	# A healthier Earth makes returned cargo more valuable.
 	return 0.65 + earth_health / 100.0 * 0.35
@@ -540,6 +650,7 @@ func _refresh_interface() -> void:
 	range_value.text = "%d units" % roundi(fuel_range)
 	ship_value.text = "Docked at Earth" if active_missions.is_empty() else "%d active" % active_missions.size()
 	solar_map.call("configure", planet_data, selected_planet_id, scanned_planet_ids, fuel_range)
+	solar_map.call("set_earth_health", earth_health)
 
 	var planet := _planet_by_id(selected_planet_id)
 	if not planet.is_empty():
@@ -638,7 +749,7 @@ func _refresh_interface() -> void:
 	else:
 		earth_status_value.text = "Critical climate stress · recovery yields are falling."
 	var restore_cost := _earth_restore_cost()
-	if earth_health >= 99.5:
+	if earth_health >= 100.0:
 		restore_button.text = "Earth is stable"
 		restore_button.disabled = true
 	else:
@@ -664,7 +775,7 @@ func _on_fuel_pressed() -> void:
 
 
 func _on_restore_pressed() -> void:
-	if earth_health >= 99.5:
+	if earth_health >= 100.0:
 		return
 	var cost := _earth_restore_cost()
 	if credits < cost:
@@ -675,6 +786,8 @@ func _on_restore_pressed() -> void:
 	credits -= cost
 	earth_health = minf(100.0, earth_health + 24.0)
 	mission_feed = "Restoration investment deployed. Earth vitality improved."
+	if _check_for_victory():
+		return
 	_save_game()
 	_refresh_interface()
 
@@ -692,7 +805,7 @@ func _save_game() -> void:
 		return
 
 	var save_data := {
-		"save_version": 3,
+		"save_version": 4,
 		"credits": credits,
 		"earth_health": earth_health,
 		"fuel_tier": fuel_tier,
@@ -705,6 +818,9 @@ func _save_game() -> void:
 		"active_missions": active_missions,
 		"landing_rocket_id": landing_rocket_id,
 		"landing_qte_elapsed": landing_qte_elapsed,
+		"run_elapsed_seconds": run_elapsed_seconds,
+		"run_finished": run_finished,
+		"run_result_record": run_result_record,
 	}
 	file.store_string(JSON.stringify(save_data))
 	file.close()
@@ -778,6 +894,11 @@ func _load_game() -> void:
 				mission["phase"] = "awaiting_landing"
 				active_missions[index] = mission
 	landing_marker_position = _landing_marker_at(landing_qte_elapsed)
+	run_elapsed_seconds = maxf(0.0, float(save_data.get("run_elapsed_seconds", 0.0)))
+	run_finished = bool(save_data.get("run_finished", false))
+	var saved_result: Variant = save_data.get("run_result_record", {})
+	if saved_result is Dictionary:
+		run_result_record = saved_result
 
 
 func _restore_saved_mission(saved_mission: Dictionary, used_rocket_ids: Dictionary) -> void:

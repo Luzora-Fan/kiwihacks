@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" path="res://Textures/Main Menu Buttons/main-menu-normal.png" id="3_button_normal"]
 [ext_resource type="Texture2D" path="res://Textures/Main Menu Buttons/main-menu-hover-over.png" id="4_button_hover"]
 [ext_resource type="Texture2D" path="res://Textures/Main Menu Buttons/main-menu-pressed.png" id="5_button_pressed"]
-[ext_resource type="Texture2D" path="res://Textures/TitleBackground.png" id="6_title_background"]
+[ext_resource type="Texture2D" path="res://Textures/Backgrounds/TitleBackground.png" id="6_title_background"]
 [ext_resource type="FontFile" path="res://Data/Nasalization Rg.otf" id="7_title_font"]
 
 [sub_resource type="StyleBoxFlat" id="MenuCardStyle"]
@@ -108,16 +108,16 @@ expand_mode = 1
 stretch_mode = 6
 
 [node name="Card" type="PanelContainer" parent="."]
-custom_minimum_size = Vector2(360, 400)
+custom_minimum_size = Vector2(420, 540)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -180.0
-offset_top = -200.0
-offset_right = 180.0
-offset_bottom = 200.0
+offset_left = -210.0
+offset_top = -270.0
+offset_right = 210.0
+offset_bottom = 270.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("MenuCardStyle")
@@ -167,6 +167,12 @@ custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
 text = "Field guide"
+
+[node name="LeaderboardButton" type="Button" parent="Card/Pages/MainPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+text = "High scores"
 
 [node name="SettingsButton" type="Button" parent="Card/Pages/MainPage"]
 custom_minimum_size = Vector2(0, 36)
@@ -447,6 +453,12 @@ layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
 text = "Field guide"
 
+[node name="LeaderboardButton" type="Button" parent="Card/Pages/PausePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+text = "High scores"
+
 [node name="SettingsButton" type="Button" parent="Card/Pages/PausePage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
@@ -480,8 +492,80 @@ theme_override_styles/hover = SubResource("QuitButtonHover")
 theme_override_styles/pressed = SubResource("QuitButtonPressed")
 text = "Quit"
 
+[node name="LeaderboardPage" type="VBoxContainer" parent="Card/Pages"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="Card/Pages/LeaderboardPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("7_title_font")
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+theme_override_font_sizes/font_size = 22
+text = "HIGH SCORES"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Summary" type="Label" parent="Card/Pages/LeaderboardPage"]
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.8, 0.82, 1)
+theme_override_font_sizes/font_size = 12
+text = "Best runs on this device. Records stay after a progress reset."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Columns" type="Label" parent="Card/Pages/LeaderboardPage"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.66, 0.7, 0.75, 1)
+theme_override_font_sizes/font_size = 10
+text = "RANK   RESULT       SCORE   WORLDS   TIME"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="LeaderboardList" type="ItemList" parent="Card/Pages/LeaderboardPage"]
+custom_minimum_size = Vector2(0, 250)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 12
+select_mode = 0
+allow_reselect = false
+
+[node name="Actions" type="HBoxContainer" parent="Card/Pages/LeaderboardPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="NewRunButton" type="Button" parent="Card/Pages/LeaderboardPage/Actions"]
+custom_minimum_size = Vector2(112, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.96, 1)
+text = "New run"
+
+[node name="MainMenuButton" type="Button" parent="Card/Pages/LeaderboardPage/Actions"]
+custom_minimum_size = Vector2(112, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+text = "Main menu"
+
+[node name="BackButton" type="Button" parent="Card/Pages/LeaderboardPage/Actions"]
+custom_minimum_size = Vector2(112, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+text = "Back"
+
 [node name="ResetConfirmation" type="ConfirmationDialog" parent="."]
 title = "Reset progress"
-dialog_text = "Reset your saved progress? This clears credits, surveys, fuel upgrades and Earth's recovery."
+dialog_text = "Reset your saved progress? This clears credits, surveys, fuel upgrades and Earth's recovery. Your run records will stay."
 ok_button_text = "Reset progress"
 cancel_button_text = "Cancel"

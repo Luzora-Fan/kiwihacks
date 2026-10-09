@@ -1,8 +1,7 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://Scripts/SolarMap.gd" id="1_map"]
-[ext_resource type="Texture2D" path="res://Textures/background.png" id="2_background"]
-[ext_resource type="Texture2D" path="res://Textures/Planets/Earth.png" id="3_earth"]
+[ext_resource type="Texture2D" path="res://Textures/Backgrounds/background.png" id="2_background"]
 [ext_resource type="Texture2D" path="res://Textures/Planets/Sun.png" id="13_sun"]
 [ext_resource type="PackedScene" path="res://PlanetMarker.tscn" id="5_marker"]
 [ext_resource type="Resource" path="res://Data/PlanetVeyra.tres" id="6_veyra"]
@@ -13,6 +12,10 @@
 [ext_resource type="Resource" path="res://Data/PlanetCalyx.tres" id="11_calyx"]
 [ext_resource type="Resource" path="res://Data/PlanetNymba.tres" id="12_nymba"]
 [ext_resource type="Resource" path="res://Data/PlanetUmbra.tres" id="14_umbra"]
+[ext_resource type="Texture2D" path="res://Textures/Earth/Earth 100% Health.png" id="15_earth_100"]
+[ext_resource type="Texture2D" path="res://Textures/Earth/Earth 75% Health.png" id="16_earth_75"]
+[ext_resource type="Texture2D" path="res://Textures/Earth/Earth 50% Health.png" id="17_earth_50"]
+[ext_resource type="Texture2D" path="res://Textures/Earth/Earth 25% Health.png" id="18_earth_25"]
 [sub_resource type="StyleBoxFlat" id="EarthRingStyle"]
 bg_color = Color(0.16, 0.56, 0.83, 0.11)
 border_color = Color(0.47, 0.83, 1, 0.72)
@@ -35,6 +38,10 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
 script = ExtResource("1_map")
+earth_texture_100 = ExtResource("15_earth_100")
+earth_texture_75 = ExtResource("16_earth_75")
+earth_texture_50 = ExtResource("17_earth_50")
+earth_texture_25 = ExtResource("18_earth_25")
 
 [node name="MapBackground" type="TextureRect" parent="."]
 layout_mode = 1
@@ -110,7 +117,7 @@ offset_left = 53.0
 offset_top = 322.0
 offset_right = 131.0
 offset_bottom = 400.0
-texture = ExtResource("3_earth")
+texture = ExtResource("15_earth_100")
 expand_mode = 1
 stretch_mode = 5
 texture_filter = 1
