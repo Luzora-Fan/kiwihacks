@@ -8,6 +8,7 @@ signal quit_requested
 signal reset_progress_requested
 
 const SETTINGS_PATH := "user://earthward_settings.cfg"
+const LEADERBOARD_COLUMN_SEPARATION := 4
 const GUIDE_STEPS := [
 	{
 		"title": "Choose a destination",
@@ -54,6 +55,7 @@ const GUIDE_STEPS := [
 @onready var guide_next_button: Button = $Card/Pages/GuidePage/Navigation/NextButton
 @onready var leaderboard_title: Label = $Card/Pages/LeaderboardPage/Title
 @onready var leaderboard_summary: Label = $Card/Pages/LeaderboardPage/Summary
+@onready var leaderboard_columns: HBoxContainer = $Card/Pages/LeaderboardPage/Columns
 @onready var leaderboard_list: VBoxContainer = $Card/Pages/LeaderboardPage/LeaderboardList
 @onready var leaderboard_empty_message: Label = $Card/Pages/LeaderboardPage/EmptyMessage
 @onready var leaderboard_new_run_button: Button = $Card/Pages/LeaderboardPage/Actions/NewRunButton
@@ -233,6 +235,8 @@ func _refresh_leaderboard() -> void:
 
 	leaderboard_list.visible = true
 	leaderboard_empty_message.visible = false
+	# Match every run row to the header width so the five fields stay evenly spaced.
+	var column_width := (leaderboard_columns.get_child(0) as Control).custom_minimum_size.x
 	for index in range(_leaderboard_runs.size()):
 		var run: Dictionary = _leaderboard_runs[index]
 		var elapsed := int(run.get("elapsed_seconds", 0))
@@ -242,22 +246,22 @@ func _refresh_leaderboard() -> void:
 		var scanned := int(run.get("planets_scanned", 0))
 		var total := int(run.get("planet_total", 0))
 		var row := HBoxContainer.new()
-		row.add_theme_constant_override("separation", 8)
+		row.add_theme_constant_override("separation", LEADERBOARD_COLUMN_SEPARATION)
 		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		leaderboard_list.add_child(row)
-		row.add_child(_make_leaderboard_cell("%02d" % (index + 1), 38.0, HORIZONTAL_ALIGNMENT_LEFT))
-		row.add_child(_make_leaderboard_cell(outcome, 90.0, HORIZONTAL_ALIGNMENT_LEFT))
-		row.add_child(_make_leaderboard_cell("%d" % int(run.get("score", 0)), 82.0, HORIZONTAL_ALIGNMENT_RIGHT))
-		row.add_child(_make_leaderboard_cell("%d/%d" % [scanned, total], 86.0, HORIZONTAL_ALIGNMENT_RIGHT))
-		row.add_child(_make_leaderboard_cell("%02d:%02d" % [minutes, seconds], 68.0, HORIZONTAL_ALIGNMENT_RIGHT))
+		row.add_child(_make_leaderboard_cell("%02d" % (index + 1), column_width))
+		row.add_child(_make_leaderboard_cell(outcome, column_width))
+		row.add_child(_make_leaderboard_cell("%d" % int(run.get("score", 0)), column_width))
+		row.add_child(_make_leaderboard_cell("%d/%d" % [scanned, total], column_width))
+		row.add_child(_make_leaderboard_cell("%02d:%02d" % [minutes, seconds], column_width))
 
 
-func _make_leaderboard_cell(value: String, minimum_width: float, alignment: int) -> Label:
+func _make_leaderboard_cell(value: String, minimum_width: float) -> Label:
 	var cell := Label.new()
 	cell.text = value
 	cell.custom_minimum_size = Vector2(minimum_width, 20.0)
 	cell.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	cell.horizontal_alignment = alignment
+	cell.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	cell.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	cell.add_theme_font_size_override("font_size", 12)
 	return cell
