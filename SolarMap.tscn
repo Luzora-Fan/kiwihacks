@@ -1,9 +1,10 @@
-[gd_scene load_steps=14 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://Scripts/SolarMap.gd" id="1_map"]
 [ext_resource type="Texture2D" path="res://Textures/background.png" id="2_background"]
 [ext_resource type="Texture2D" path="res://Textures/Earth.png" id="3_earth"]
 [ext_resource type="Texture2D" path="res://Textures/Rocket.png" id="4_rocket"]
+[ext_resource type="Texture2D" path="res://Textures/Sun.png" id="13_sun"]
 [ext_resource type="PackedScene" path="res://PlanetMarker.tscn" id="5_marker"]
 [ext_resource type="Resource" path="res://Data/PlanetVeyra.tres" id="6_veyra"]
 [ext_resource type="Resource" path="res://Data/PlanetNaylas.tres" id="7_naylas"]
@@ -72,6 +73,28 @@ mouse_filter = 2
 [node name="World" type="Control" parent="MapViewport"]
 offset_right = 2260.0
 offset_bottom = 760.0
+mouse_filter = 2
+
+[node name="SunSprite" type="TextureRect" parent="MapViewport/World"]
+offset_left = 54.0
+offset_top = 211.0
+offset_right = 130.0
+offset_bottom = 287.0
+texture = ExtResource("13_sun")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+mouse_filter = 2
+
+[node name="SunTitle" type="Label" parent="MapViewport/World"]
+offset_left = 37.0
+offset_top = 288.0
+offset_right = 147.0
+offset_bottom = 308.0
+theme_override_colors/font_color = Color(1, 0.74, 0.45, 1)
+theme_override_font_sizes/font_size = 11
+text = "Sun"
+horizontal_alignment = 1
 mouse_filter = 2
 
 [node name="EarthHalo" type="Panel" parent="MapViewport/World"]
