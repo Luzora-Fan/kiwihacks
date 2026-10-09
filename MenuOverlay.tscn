@@ -1,0 +1,287 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Scripts/MenuOverlay.gd" id="1_menu"]
+
+[sub_resource type="StyleBoxFlat" id="MenuCardStyle"]
+bg_color = Color(0.045, 0.05, 0.065, 0.98)
+border_color = Color(0.34, 0.38, 0.42, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+content_margin_left = 18.0
+content_margin_top = 16.0
+content_margin_right = 18.0
+content_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxFlat" id="MenuButtonStyle"]
+bg_color = Color(0.16, 0.19, 0.22, 1)
+border_color = Color(0.34, 0.38, 0.42, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+content_margin_left = 10.0
+content_margin_top = 7.0
+content_margin_right = 10.0
+content_margin_bottom = 7.0
+
+[node name="MenuOverlay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_menu")
+
+[node name="Dimmer" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.008, 0.012, 0.025, 0.82)
+mouse_filter = 0
+
+[node name="Card" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(360, 360)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -180.0
+offset_right = 180.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("MenuCardStyle")
+
+[node name="Pages" type="Control" parent="Card"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MainPage" type="VBoxContainer" parent="Card/Pages"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Card/Pages/MainPage"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+theme_override_font_sizes/font_size = 28
+text = "EARTHWARD"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Card/Pages/MainPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.75, 0.78, 1)
+theme_override_font_sizes/font_size = 12
+text = "A planet recovery prototype\nSurvey worlds. Bring resources home."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="PlayButton" type="Button" parent="Card/Pages/MainPage"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.96, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Play"
+
+[node name="SettingsButton" type="Button" parent="Card/Pages/MainPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Settings"
+
+[node name="CreditsButton" type="Button" parent="Card/Pages/MainPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Credits"
+
+[node name="SettingsPage" type="VBoxContainer" parent="Card/Pages"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Card/Pages/SettingsPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+theme_override_font_sizes/font_size = 23
+text = "Settings"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VolumeRow" type="HBoxContainer" parent="Card/Pages/SettingsPage"]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="VolumeLabel" type="Label" parent="Card/Pages/SettingsPage/VolumeRow"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.84, 0.86, 1)
+text = "Master volume"
+vertical_alignment = 1
+
+[node name="VolumeSlider" type="HSlider" parent="Card/Pages/SettingsPage/VolumeRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 0.0
+max_value = 1.0
+step = 0.05
+value = 1.0
+
+[node name="VolumeValue" type="Label" parent="Card/Pages/SettingsPage/VolumeRow"]
+custom_minimum_size = Vector2(42, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.84, 0.86, 1)
+text = "100%"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="FullscreenToggle" type="CheckButton" parent="Card/Pages/SettingsPage"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.82, 0.84, 0.86, 1)
+text = "Fullscreen"
+
+[node name="BackButton" type="Button" parent="Card/Pages/SettingsPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Back"
+
+[node name="CreditsPage" type="VBoxContainer" parent="Card/Pages"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Card/Pages/CreditsPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+theme_override_font_sizes/font_size = 23
+text = "Credits"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CreditsText" type="Label" parent="Card/Pages/CreditsPage"]
+custom_minimum_size = Vector2(0, 128)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.8, 0.82, 1)
+theme_override_font_sizes/font_size = 13
+text = "Game design and development\nEarthward project team\n\nPlanet artwork\nProject-provided sprites\n\nEngine\nGodot Engine"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BackButton" type="Button" parent="Card/Pages/CreditsPage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Back"
+
+[node name="PausePage" type="VBoxContainer" parent="Card/Pages"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="Card/Pages/PausePage"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
+theme_override_font_sizes/font_size = 26
+text = "Paused"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="Card/Pages/PausePage"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.94, 0.95, 0.96, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Resume"
+
+[node name="SettingsButton" type="Button" parent="Card/Pages/PausePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Settings"
+
+[node name="CreditsButton" type="Button" parent="Card/Pages/PausePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Credits"
+
+[node name="MainMenuButton" type="Button" parent="Card/Pages/PausePage"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
+theme_override_styles/normal = SubResource("MenuButtonStyle")
+theme_override_styles/hover = SubResource("MenuButtonStyle")
+theme_override_styles/pressed = SubResource("MenuButtonStyle")
+text = "Main menu"

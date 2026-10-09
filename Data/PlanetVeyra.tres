@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/PlanetData.gd" id="1_data"]
+[ext_resource type="Texture2D" path="res://Textures/Embrion.png" id="2_sprite"]
+
+[resource]
+script = ExtResource("1_data")
+id = "veyra"
+display_name = "Veyra"
+distance = 220.0
+distance_label = "220 units"
+description = "A pale world wrapped in luminous mineral storms."
+resource = "Aether quartz"
+crate_price = 18
+crate_min = 5
+crate_max = 8
+sprite = ExtResource("2_sprite")

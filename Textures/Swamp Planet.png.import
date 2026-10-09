@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bj40jfshod7bo"
-path="res://.godot/imported/Earth.png-1c5be01d31d5bb7ffbab1eb48b1b0d4d.ctex"
+uid="uid://bpasu2fd1aw6t"
+path="res://.godot/imported/Swamp Planet.png-c1ec3723d9df4e40495ba26f5e6b455a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Textures/Earth.png"
-dest_files=["res://.godot/imported/Earth.png-1c5be01d31d5bb7ffbab1eb48b1b0d4d.ctex"]
+source_file="res://Textures/Swamp Planet.png"
+dest_files=["res://.godot/imported/Swamp Planet.png-c1ec3723d9df4e40495ba26f5e6b455a.ctex"]
 
 [params]
 

@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/PlanetData.gd" id="1_data"]
+[ext_resource type="Texture2D" path="res://Textures/asamit.png" id="2_sprite"]
+
+[resource]
+script = ExtResource("1_data")
+id = "nymba"
+display_name = "Nymba"
+distance = 1860.0
+distance_label = "1,860 units"
+description = "A shadowed world with a thin ring of dark material."
+resource = "Shadowglass"
+crate_price = 62
+crate_min = 14
+crate_max = 20
+sprite = ExtResource("2_sprite")

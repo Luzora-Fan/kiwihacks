@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/PlanetData.gd" id="1_data"]
+[ext_resource type="Texture2D" path="res://Textures/Naylas.png" id="2_sprite"]
+
+[resource]
+script = ExtResource("1_data")
+id = "naylas"
+display_name = "Naylas"
+distance = 460.0
+distance_label = "460 units"
+description = "A red ringed world whose drifting debris carries dense metals."
+resource = "Ferric pearls"
+crate_price = 24
+crate_min = 6
+crate_max = 10
+sprite = ExtResource("2_sprite")

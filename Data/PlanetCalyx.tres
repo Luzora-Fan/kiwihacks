@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/PlanetData.gd" id="1_data"]
+[ext_resource type="Texture2D" path="res://Textures/Leo Planet.png" id="2_sprite"]
+
+[resource]
+script = ExtResource("1_data")
+id = "calyx"
+display_name = "Calyx"
+distance = 1550.0
+distance_label = "1,550 units"
+description = "A calm green world patterned with broad mineral bands."
+resource = "Verdant silicates"
+crate_price = 56
+crate_min = 12
+crate_max = 18
+sprite = ExtResource("2_sprite")

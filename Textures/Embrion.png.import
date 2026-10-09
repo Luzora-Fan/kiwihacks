@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bj40jfshod7bo"
-path="res://.godot/imported/Earth.png-1c5be01d31d5bb7ffbab1eb48b1b0d4d.ctex"
+uid="uid://cyif4fg6kvq03"
+path="res://.godot/imported/Embrion.png-bfde5f927098b34b0faf297cbd0ccaa5.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Textures/Earth.png"
-dest_files=["res://.godot/imported/Earth.png-1c5be01d31d5bb7ffbab1eb48b1b0d4d.ctex"]
+source_file="res://Textures/Embrion.png"
+dest_files=["res://.godot/imported/Embrion.png-bfde5f927098b34b0faf297cbd0ccaa5.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bj40jfshod7bo"
-path="res://.godot/imported/Earth.png-1c5be01d31d5bb7ffbab1eb48b1b0d4d.ctex"
+uid="uid://do2xu58shnwyi"
+path="res://.godot/imported/Leo Planet.png-2a1bb78e6aeb1ed09b655106aaecb33c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Textures/Earth.png"
-dest_files=["res://.godot/imported/Earth.png-1c5be01d31d5bb7ffbab1eb48b1b0d4d.ctex"]
+source_file="res://Textures/Leo Planet.png"
+dest_files=["res://.godot/imported/Leo Planet.png-2a1bb78e6aeb1ed09b655106aaecb33c.ctex"]
 
 [params]
 
