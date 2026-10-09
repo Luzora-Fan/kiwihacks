@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/PlanetData.gd" id="1_data"]
+[ext_resource type="Texture2D" path="res://Textures/Venus.png" id="2_sprite"]
+
+[resource]
+script = ExtResource("1_data")
+id = "oros"
+display_name = "Oros"
+distance = 1020.0
+distance_label = "1,020 units"
+description = "A banded copper world that sheds rare silicate glass."
+resource = "Silica glass"
+crate_price = 42
+crate_min = 9
+crate_max = 14
+sprite = ExtResource("2_sprite")

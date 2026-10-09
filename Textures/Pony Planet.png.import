@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bj40jfshod7bo"
-path="res://.godot/imported/Earth.png-1c5be01d31d5bb7ffbab1eb48b1b0d4d.ctex"
+uid="uid://o3qx7w4smfh"
+path="res://.godot/imported/Pony Planet.png-224e6d2d53e78df16018c5bc60e39196.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Textures/Earth.png"
-dest_files=["res://.godot/imported/Earth.png-1c5be01d31d5bb7ffbab1eb48b1b0d4d.ctex"]
+source_file="res://Textures/Pony Planet.png"
+dest_files=["res://.godot/imported/Pony Planet.png-224e6d2d53e78df16018c5bc60e39196.ctex"]
 
 [params]
 

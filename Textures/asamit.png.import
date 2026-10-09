@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bj40jfshod7bo"
-path="res://.godot/imported/Earth.png-1c5be01d31d5bb7ffbab1eb48b1b0d4d.ctex"
+uid="uid://2a8ado76vekj"
+path="res://.godot/imported/asamit.png-68b267d68fd874425d6f3e1dc0368b4b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Textures/Earth.png"
-dest_files=["res://.godot/imported/Earth.png-1c5be01d31d5bb7ffbab1eb48b1b0d4d.ctex"]
+source_file="res://Textures/asamit.png"
+dest_files=["res://.godot/imported/asamit.png-68b267d68fd874425d6f3e1dc0368b4b.ctex"]
 
 [params]
 

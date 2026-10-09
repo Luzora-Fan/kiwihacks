@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="PlanetData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Scripts/PlanetData.gd" id="1_data"]
+[ext_resource type="Texture2D" path="res://Textures/Swamp Planet.png" id="2_sprite"]
+
+[resource]
+script = ExtResource("1_data")
+id = "mireth"
+display_name = "Mireth"
+distance = 740.0
+distance_label = "740 units"
+description = "A saturated green world with deep, luminous marsh seas."
+resource = "Bioluminescent peat"
+crate_price = 32
+crate_min = 7
+crate_max = 11
+sprite = ExtResource("2_sprite")

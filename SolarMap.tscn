@@ -1,0 +1,182 @@
+[gd_scene load_steps=14 format=3]
+
+[ext_resource type="Script" path="res://Scripts/SolarMap.gd" id="1_map"]
+[ext_resource type="Texture2D" path="res://Textures/background.png" id="2_background"]
+[ext_resource type="Texture2D" path="res://Textures/Earth.png" id="3_earth"]
+[ext_resource type="Texture2D" path="res://Textures/Rocket.png" id="4_rocket"]
+[ext_resource type="PackedScene" path="res://PlanetMarker.tscn" id="5_marker"]
+[ext_resource type="Resource" path="res://Data/PlanetVeyra.tres" id="6_veyra"]
+[ext_resource type="Resource" path="res://Data/PlanetNaylas.tres" id="7_naylas"]
+[ext_resource type="Resource" path="res://Data/PlanetMireth.tres" id="8_mireth"]
+[ext_resource type="Resource" path="res://Data/PlanetOros.tres" id="9_oros"]
+[ext_resource type="Resource" path="res://Data/PlanetPavo.tres" id="10_pavo"]
+[ext_resource type="Resource" path="res://Data/PlanetCalyx.tres" id="11_calyx"]
+[ext_resource type="Resource" path="res://Data/PlanetNymba.tres" id="12_nymba"]
+
+[sub_resource type="StyleBoxFlat" id="EarthRingStyle"]
+bg_color = Color(0.16, 0.56, 0.83, 0.11)
+border_color = Color(0.47, 0.83, 1, 0.72)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+
+[node name="SolarMap" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+script = ExtResource("1_map")
+
+[node name="MapBackground" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_background")
+expand_mode = 1
+stretch_mode = 6
+modulate = Color(0.62, 0.57, 0.79, 0.72)
+mouse_filter = 2
+
+[node name="MapShade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.018, 0.027, 0.075, 0.48)
+mouse_filter = 2
+
+[node name="MapViewport" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+clip_contents = true
+mouse_filter = 2
+
+[node name="World" type="Control" parent="MapViewport"]
+offset_right = 2260.0
+offset_bottom = 760.0
+mouse_filter = 2
+
+[node name="EarthHalo" type="Panel" parent="MapViewport/World"]
+offset_left = 44.0
+offset_top = 313.0
+offset_right = 140.0
+offset_bottom = 409.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("EarthRingStyle")
+
+[node name="EarthSprite" type="TextureRect" parent="MapViewport/World"]
+offset_left = 53.0
+offset_top = 322.0
+offset_right = 131.0
+offset_bottom = 400.0
+texture = ExtResource("3_earth")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+mouse_filter = 2
+
+[node name="EarthTitle" type="Label" parent="MapViewport/World"]
+offset_left = 45.0
+offset_top = 416.0
+offset_right = 137.0
+offset_bottom = 436.0
+theme_override_colors/font_color = Color(0.81, 0.91, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "Earth"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="EarthSubtitle" type="Label" parent="MapViewport/World"]
+offset_left = 42.0
+offset_top = 436.0
+offset_right = 140.0
+offset_bottom = 454.0
+theme_override_colors/font_color = Color(0.5, 0.68, 0.82, 1)
+theme_override_font_sizes/font_size = 9
+text = "Home"
+horizontal_alignment = 1
+mouse_filter = 2
+
+[node name="PlanetMarkers" type="Control" parent="MapViewport/World"]
+offset_right = 2260.0
+offset_bottom = 760.0
+mouse_filter = 2
+
+[node name="Veyra" parent="MapViewport/World/PlanetMarkers" instance=ExtResource("5_marker")]
+offset_left = 248.0
+offset_top = 257.0
+offset_right = 388.0
+offset_bottom = 427.0
+planet_data = ExtResource("6_veyra")
+
+[node name="Naylas" parent="MapViewport/World/PlanetMarkers" instance=ExtResource("5_marker")]
+offset_left = 523.0
+offset_top = 374.0
+offset_right = 663.0
+offset_bottom = 544.0
+planet_data = ExtResource("7_naylas")
+
+[node name="Mireth" parent="MapViewport/World/PlanetMarkers" instance=ExtResource("5_marker")]
+offset_left = 823.0
+offset_top = 249.0
+offset_right = 963.0
+offset_bottom = 419.0
+planet_data = ExtResource("8_mireth")
+
+[node name="Oros" parent="MapViewport/World/PlanetMarkers" instance=ExtResource("5_marker")]
+offset_left = 1170.0
+offset_top = 362.0
+offset_right = 1310.0
+offset_bottom = 532.0
+planet_data = ExtResource("9_oros")
+
+[node name="Pavo" parent="MapViewport/World/PlanetMarkers" instance=ExtResource("5_marker")]
+offset_left = 1460.0
+offset_top = 260.0
+offset_right = 1600.0
+offset_bottom = 430.0
+planet_data = ExtResource("10_pavo")
+
+[node name="Calyx" parent="MapViewport/World/PlanetMarkers" instance=ExtResource("5_marker")]
+offset_left = 1760.0
+offset_top = 375.0
+offset_right = 1900.0
+offset_bottom = 545.0
+planet_data = ExtResource("11_calyx")
+
+[node name="Nymba" parent="MapViewport/World/PlanetMarkers" instance=ExtResource("5_marker")]
+offset_left = 2060.0
+offset_top = 250.0
+offset_right = 2200.0
+offset_bottom = 420.0
+planet_data = ExtResource("12_nymba")
+
+[node name="ShipSprite" type="TextureRect" parent="MapViewport/World"]
+visible = false
+offset_left = 75.0
+offset_top = 344.0
+offset_right = 109.0
+offset_bottom = 378.0
+texture = ExtResource("4_rocket")
+expand_mode = 1
+stretch_mode = 5
+texture_filter = 1
+mouse_filter = 2
