@@ -6,6 +6,7 @@ signal planet_selected(planet_id: String)
 @onready var marker_container: Control = $MapViewport/World/PlanetMarkers
 @onready var ship_sprite: TextureRect = $MapViewport/World/ShipSprite
 @onready var earth_sprite: TextureRect = $MapViewport/World/EarthSprite
+@onready var rocket_trail: GPUParticles2D = $MapViewport/World/RocketTrail
 
 var markers: Dictionary = {}
 var planet_data: Array[Dictionary] = []
@@ -90,6 +91,7 @@ func set_mission_state(phase: String, target_id: String, progress: float) -> voi
 	mission_progress = clampf(progress, 0.0, 1.0)
 	if mission_phase == "idle" or not markers.has(mission_planet_id):
 		ship_sprite.visible = false
+		rocket_trail.emitting = false
 		var earth_center := earth_sprite.position + earth_sprite.size * 0.5
 		ship_sprite.position = earth_center - ship_sprite.size * 0.5
 		_center_camera_on_ship()
@@ -113,6 +115,10 @@ func set_mission_state(phase: String, target_id: String, progress: float) -> voi
 		travel_direction = -travel_direction
 	ship_sprite.position = ship_position - ship_sprite.size * 0.5
 	ship_sprite.rotation = travel_direction.angle() + PI * 0.5
+	# Keep the authored exhaust emitter just behind the rocket during each flight leg.
+	rocket_trail.emitting = true
+	rocket_trail.position = ship_position - travel_direction.normalized() * 16.0
+	rocket_trail.rotation = ship_sprite.rotation
 	_center_camera_on_ship()
 
 

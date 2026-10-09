@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" uid="uid://c581wd57to5et" path="res://Audio/ufoflying.mp3" id="5_flight"]
 [ext_resource type="AudioStream" path="res://Audio/red-alert-klaxxon.mp3" id="6_alert"]
 [ext_resource type="AudioStream" path="res://Audio/space-ship-landing.mp3" id="7_landing"]
+[ext_resource type="Environment" path="res://SpaceEnvironment.tres" id="8_environment"]
 
 [sub_resource type="StyleBoxFlat" id="HeaderStyle"]
 content_margin_left = 16.0
@@ -584,3 +585,6 @@ volume_db = -5.0
 [node name="AlertAudio" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("6_alert")
 volume_db = -5.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("8_environment")
