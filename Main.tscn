@@ -5,9 +5,10 @@
 [ext_resource type="PackedScene" path="res://SolarMap.tscn" id="3_map"]
 [ext_resource type="PackedScene" path="res://MenuOverlay.tscn" id="4_menu"]
 [ext_resource type="AudioStream" uid="uid://c581wd57to5et" path="res://Audio/ufoflying.mp3" id="5_flight"]
-[ext_resource type="AudioStream" path="res://Audio/red-alert-klaxxon.mp3" id="6_alert"]
-[ext_resource type="AudioStream" path="res://Audio/space-ship-landing.mp3" id="7_landing"]
+[ext_resource type="AudioStream" uid="uid://dw2o8ujtrvwk0" path="res://Audio/red-alert-klaxxon.mp3" id="6_alert"]
+[ext_resource type="AudioStream" uid="uid://dnt7knxwxdovn" path="res://Audio/space-ship-landing.mp3" id="7_landing"]
 [ext_resource type="Environment" path="res://SpaceEnvironment.tres" id="8_environment"]
+[ext_resource type="Theme" path="res://Data/GameTheme.tres" id="9_button_theme"]
 
 [sub_resource type="StyleBoxFlat" id="HeaderStyle"]
 content_margin_left = 16.0
@@ -42,55 +43,28 @@ corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 
-[sub_resource type="StyleBoxFlat" id="PrimaryButton"]
-content_margin_left = 10.0
-content_margin_top = 8.0
-content_margin_right = 10.0
-content_margin_bottom = 8.0
-bg_color = Color(0.24, 0.3, 0.36, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.39, 0.43, 0.48, 1)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-
-[sub_resource type="StyleBoxFlat" id="SecondaryButton"]
-content_margin_left = 10.0
-content_margin_top = 8.0
-content_margin_right = 10.0
-content_margin_bottom = 8.0
-bg_color = Color(0.15, 0.17, 0.2, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.32, 0.34, 0.37, 1)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
-
 [sub_resource type="StyleBoxFlat" id="ProgressBackground"]
 bg_color = Color(0.12, 0.13, 0.15, 1)
 
 [sub_resource type="StyleBoxFlat" id="ProgressFill"]
 bg_color = Color(0.43, 0.58, 0.68, 1)
 
+[sub_resource type="StyleBoxEmpty" id="FollowRocketToggleStyle"]
+
 [node name="Main" type="Control" unique_id=1703097978]
+texture_filter = 1
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("9_button_theme")
 script = ExtResource("1_main")
 
 [node name="Backdrop" type="TextureRect" parent="." unique_id=155111164]
 modulate = Color(0.55, 0.52, 0.76, 1)
+texture_filter = 2
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -117,6 +91,7 @@ layout_mode = 1
 anchors_preset = 10
 anchor_right = 1.0
 offset_bottom = 58.0
+grow_horizontal = 2
 theme_override_styles/panel = SubResource("HeaderStyle")
 
 [node name="Content" type="HBoxContainer" parent="Header" unique_id=1908778079]
@@ -133,7 +108,7 @@ custom_minimum_size = Vector2(0, 27)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.91, 0.93, 1)
 theme_override_font_sizes/font_size = 20
-text = "Earthward · Prototype"
+text = "Earthward"
 vertical_alignment = 1
 
 [node name="Subtitle" type="Label" parent="Header/Content/Brand" unique_id=1379686821]
@@ -374,10 +349,6 @@ focus_mode = 0
 theme_override_colors/font_color = Color(0.94, 0.95, 0.96, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 11
-theme_override_styles/normal = SubResource("PrimaryButton")
-theme_override_styles/pressed = SubResource("PrimaryButton")
-theme_override_styles/hover = SubResource("PrimaryButton")
-theme_override_styles/disabled = SubResource("SecondaryButton")
 text = "Launch survey"
 
 [node name="FuelButton" type="Button" parent="SidebarScroll/PanelStack/TargetPanel/Content" unique_id=308058232]
@@ -387,10 +358,6 @@ focus_mode = 0
 theme_override_colors/font_color = Color(0.84, 0.85, 0.87, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 11
-theme_override_styles/normal = SubResource("SecondaryButton")
-theme_override_styles/pressed = SubResource("SecondaryButton")
-theme_override_styles/hover = SubResource("SecondaryButton")
-theme_override_styles/disabled = SubResource("SecondaryButton")
 text = "Upgrade fuel · CR 180"
 
 [node name="MissionPanel" type="PanelContainer" parent="SidebarScroll/PanelStack" unique_id=804502263]
@@ -499,10 +466,6 @@ focus_mode = 0
 theme_override_colors/font_color = Color(0.94, 0.95, 0.96, 1)
 theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 11
-theme_override_styles/normal = SubResource("PrimaryButton")
-theme_override_styles/pressed = SubResource("PrimaryButton")
-theme_override_styles/hover = SubResource("PrimaryButton")
-theme_override_styles/disabled = SubResource("SecondaryButton")
 text = "Restore Earth · CR 110"
 
 [node name="MapPanel" type="PanelContainer" parent="." unique_id=114569983]
@@ -545,7 +508,7 @@ theme_override_colors/font_color = Color(0.7, 0.71, 0.73, 1)
 theme_override_font_sizes/font_size = 9
 text = "Drag to pan · Select a planet to set course"
 
-[node name="CameraFollowToggle" type="CheckButton" parent="MapPanel/MapContent"]
+[node name="CameraFollowToggle" type="CheckButton" parent="MapPanel/MapContent" unique_id=66328408]
 custom_minimum_size = Vector2(150, 30)
 layout_mode = 0
 anchor_left = 1.0
@@ -554,10 +517,15 @@ offset_left = -168.0
 offset_top = 12.0
 offset_right = -14.0
 offset_bottom = 42.0
+tooltip_text = "Keep the rocket in view"
 theme_override_colors/font_color = Color(0.82, 0.84, 0.86, 1)
 theme_override_font_sizes/font_size = 10
+theme_override_styles/normal = SubResource("FollowRocketToggleStyle")
+theme_override_styles/pressed = SubResource("FollowRocketToggleStyle")
+theme_override_styles/hover = SubResource("FollowRocketToggleStyle")
+theme_override_styles/hover_pressed = SubResource("FollowRocketToggleStyle")
+theme_override_styles/disabled = SubResource("FollowRocketToggleStyle")
 text = "Follow rocket"
-tooltip_text = "Keep the rocket in view"
 
 [node name="MapLegend" type="Label" parent="MapPanel/MapContent" unique_id=227074426]
 layout_mode = 0
@@ -578,13 +546,13 @@ layout_mode = 1
 stream = ExtResource("5_flight")
 volume_db = -7.0
 
-[node name="LandingAudio" type="AudioStreamPlayer" parent="."]
+[node name="LandingAudio" type="AudioStreamPlayer" parent="." unique_id=167316614]
 stream = ExtResource("7_landing")
 volume_db = -5.0
 
-[node name="AlertAudio" type="AudioStreamPlayer" parent="."]
+[node name="AlertAudio" type="AudioStreamPlayer" parent="." unique_id=2014366362]
 stream = ExtResource("6_alert")
 volume_db = -5.0
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1509667277]
 environment = ExtResource("8_environment")

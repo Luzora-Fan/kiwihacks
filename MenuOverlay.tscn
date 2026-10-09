@@ -1,6 +1,12 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://Scripts/MenuOverlay.gd" id="1_menu"]
+[ext_resource type="Theme" path="res://Data/GameTheme.tres" id="2_button_theme"]
+[ext_resource type="Texture2D" path="res://Textures/Main Menu Buttons/main-menu-normal.png" id="3_button_normal"]
+[ext_resource type="Texture2D" path="res://Textures/Main Menu Buttons/main-menu-hover-over.png" id="4_button_hover"]
+[ext_resource type="Texture2D" path="res://Textures/Main Menu Buttons/main-menu-pressed.png" id="5_button_pressed"]
+[ext_resource type="Texture2D" path="res://Textures/TitleBackground.png" id="6_title_background"]
+[ext_resource type="FontFile" path="res://Data/Nasalization Rg.otf" id="7_title_font"]
 
 [sub_resource type="StyleBoxFlat" id="MenuCardStyle"]
 bg_color = Color(0.045, 0.05, 0.065, 0.98)
@@ -18,37 +24,50 @@ content_margin_top = 16.0
 content_margin_right = 18.0
 content_margin_bottom = 16.0
 
-[sub_resource type="StyleBoxFlat" id="MenuButtonStyle"]
-bg_color = Color(0.16, 0.19, 0.22, 1)
-border_color = Color(0.34, 0.38, 0.42, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
+[sub_resource type="StyleBoxTexture" id="QuitButtonNormal"]
+texture = ExtResource("3_button_normal")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+axis_stretch_horizontal = 0
+axis_stretch_vertical = 0
+modulate_color = Color(1.25, 0.5, 0.58, 1)
 content_margin_left = 10.0
 content_margin_top = 7.0
 content_margin_right = 10.0
 content_margin_bottom = 7.0
+region_rect = Rect2(0, 8, 32, 16)
 
-[sub_resource type="StyleBoxFlat" id="QuitButtonStyle"]
-bg_color = Color(0.48, 0.12, 0.13, 1)
-border_color = Color(0.68, 0.2, 0.2, 1)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_right = 3
-corner_radius_bottom_left = 3
+[sub_resource type="StyleBoxTexture" id="QuitButtonHover"]
+texture = ExtResource("4_button_hover")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+axis_stretch_horizontal = 0
+axis_stretch_vertical = 0
+modulate_color = Color(1.3, 0.65, 0.72, 1)
 content_margin_left = 10.0
 content_margin_top = 7.0
 content_margin_right = 10.0
 content_margin_bottom = 7.0
+region_rect = Rect2(0, 8, 32, 16)
+
+[sub_resource type="StyleBoxTexture" id="QuitButtonPressed"]
+texture = ExtResource("5_button_pressed")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+axis_stretch_horizontal = 0
+axis_stretch_vertical = 0
+modulate_color = Color(0.95, 0.42, 0.48, 1)
+content_margin_left = 10.0
+content_margin_top = 7.0
+content_margin_right = 10.0
+content_margin_bottom = 7.0
+region_rect = Rect2(0, 8, 32, 16)
 
 [node name="MenuOverlay" type="Control"]
 layout_mode = 3
@@ -58,7 +77,9 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 0
+texture_filter = 1
 script = ExtResource("1_menu")
+theme = ExtResource("2_button_theme")
 
 [node name="Dimmer" type="ColorRect" parent="."]
 layout_mode = 1
@@ -69,6 +90,20 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.008, 0.012, 0.025, 0.82)
 mouse_filter = 0
+
+[node name="TitleBackground" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture_filter = 2
+texture = ExtResource("6_title_background")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="Card" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(360, 400)
@@ -103,6 +138,7 @@ theme_override_constants/separation = 8
 [node name="Title" type="Label" parent="Card/Pages/MainPage"]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("7_title_font")
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 theme_override_font_sizes/font_size = 28
 text = "EARTHWARD"
@@ -122,54 +158,39 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.95, 0.96, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Play"
 
 [node name="GuideButton" type="Button" parent="Card/Pages/MainPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Field guide"
 
 [node name="SettingsButton" type="Button" parent="Card/Pages/MainPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Settings"
 
 [node name="ControlsButton" type="Button" parent="Card/Pages/MainPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Controls"
 
 [node name="CreditsButton" type="Button" parent="Card/Pages/MainPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Credits"
 
 [node name="QuitButton" type="Button" parent="Card/Pages/MainPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.94, 0.94, 1)
-theme_override_styles/normal = SubResource("QuitButtonStyle")
-theme_override_styles/hover = SubResource("QuitButtonStyle")
-theme_override_styles/pressed = SubResource("QuitButtonStyle")
+theme_override_styles/normal = SubResource("QuitButtonNormal")
+theme_override_styles/hover = SubResource("QuitButtonHover")
+theme_override_styles/pressed = SubResource("QuitButtonPressed")
 text = "Quit"
 
 [node name="SettingsPage" type="VBoxContainer" parent="Card/Pages"]
@@ -186,6 +207,7 @@ theme_override_constants/separation = 12
 [node name="Title" type="Label" parent="Card/Pages/SettingsPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("7_title_font")
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 theme_override_font_sizes/font_size = 23
 text = "Settings"
@@ -230,18 +252,12 @@ text = "Fullscreen"
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Reset progress"
 
 [node name="BackButton" type="Button" parent="Card/Pages/SettingsPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Back"
 
 [node name="ControlsPage" type="VBoxContainer" parent="Card/Pages"]
@@ -258,6 +274,7 @@ theme_override_constants/separation = 12
 [node name="Title" type="Label" parent="Card/Pages/ControlsPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("7_title_font")
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 theme_override_font_sizes/font_size = 23
 text = "Controls"
@@ -278,9 +295,6 @@ autowrap_mode = 2
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Back"
 
 [node name="GuidePage" type="VBoxContainer" parent="Card/Pages"]
@@ -297,6 +311,7 @@ theme_override_constants/separation = 8
 [node name="Title" type="Label" parent="Card/Pages/GuidePage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("7_title_font")
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 theme_override_font_sizes/font_size = 23
 text = "Field guide"
@@ -341,9 +356,6 @@ custom_minimum_size = Vector2(0, 36)
 size_flags_horizontal = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Previous"
 
 [node name="NextButton" type="Button" parent="Card/Pages/GuidePage/Navigation"]
@@ -351,18 +363,12 @@ custom_minimum_size = Vector2(0, 36)
 size_flags_horizontal = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Next"
 
 [node name="ReturnButton" type="Button" parent="Card/Pages/GuidePage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Back"
 
 [node name="CreditsPage" type="VBoxContainer" parent="Card/Pages"]
@@ -379,6 +385,7 @@ theme_override_constants/separation = 12
 [node name="Title" type="Label" parent="Card/Pages/CreditsPage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("7_title_font")
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 theme_override_font_sizes/font_size = 23
 text = "Credits"
@@ -398,9 +405,6 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Back"
 
 [node name="PausePage" type="VBoxContainer" parent="Card/Pages"]
@@ -417,6 +421,7 @@ theme_override_constants/separation = 8
 [node name="Title" type="Label" parent="Card/Pages/PausePage"]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("7_title_font")
 theme_override_colors/font_color = Color(0.92, 0.93, 0.95, 1)
 theme_override_font_sizes/font_size = 26
 text = "Paused"
@@ -427,63 +432,45 @@ vertical_alignment = 1
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.94, 0.95, 0.96, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Resume"
 
 [node name="GuideButton" type="Button" parent="Card/Pages/PausePage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Field guide"
 
 [node name="SettingsButton" type="Button" parent="Card/Pages/PausePage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Settings"
 
 [node name="ControlsButton" type="Button" parent="Card/Pages/PausePage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Controls"
 
 [node name="CreditsButton" type="Button" parent="Card/Pages/PausePage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Credits"
 
 [node name="MainMenuButton" type="Button" parent="Card/Pages/PausePage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.88, 0.89, 0.91, 1)
-theme_override_styles/normal = SubResource("MenuButtonStyle")
-theme_override_styles/hover = SubResource("MenuButtonStyle")
-theme_override_styles/pressed = SubResource("MenuButtonStyle")
 text = "Main menu"
 
 [node name="QuitButton" type="Button" parent="Card/Pages/PausePage"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.94, 0.94, 1)
-theme_override_styles/normal = SubResource("QuitButtonStyle")
-theme_override_styles/hover = SubResource("QuitButtonStyle")
-theme_override_styles/pressed = SubResource("QuitButtonStyle")
+theme_override_styles/normal = SubResource("QuitButtonNormal")
+theme_override_styles/hover = SubResource("QuitButtonHover")
+theme_override_styles/pressed = SubResource("QuitButtonPressed")
 text = "Quit"
 
 [node name="ResetConfirmation" type="ConfirmationDialog" parent="."]

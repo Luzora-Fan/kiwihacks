@@ -4,7 +4,7 @@ signal planet_selected(planet_id: String)
 
 @onready var world: Control = $MapViewport/World
 @onready var marker_container: Control = $MapViewport/World/PlanetMarkers
-@onready var ship_sprite: TextureRect = $MapViewport/World/ShipSprite
+@onready var ship_sprite: AnimatedSprite2D = $MapViewport/World/ShipSprite
 @onready var earth_sprite: TextureRect = $MapViewport/World/EarthSprite
 
 var markers: Dictionary = {}
@@ -84,17 +84,22 @@ func configure(
 
 
 func set_mission_state(phase: String, target_id: String, progress: float) -> void:
-	# Move the pre-placed rocket sprite along the authored Earth-to-planet route.
+	# Move the pre-placed rocket animation along the authored Earth-to-planet route.
 	mission_phase = phase
 	mission_planet_id = target_id
 	mission_progress = clampf(progress, 0.0, 1.0)
 	if mission_phase == "idle" or not markers.has(mission_planet_id):
 		ship_sprite.visible = false
+		ship_sprite.stop()
+		ship_sprite.frame = 0
+		ship_sprite.frame_progress = 0.0
 		var earth_center := earth_sprite.position + earth_sprite.size * 0.5
-		ship_sprite.position = earth_center - ship_sprite.size * 0.5
+		ship_sprite.position = earth_center
 		_center_camera_on_ship()
 		return
 	ship_sprite.visible = true
+	if not ship_sprite.is_playing():
+		ship_sprite.play("default")
 
 	var earth_center := earth_sprite.position + earth_sprite.size * 0.5
 	var target_marker: Control = markers[mission_planet_id]
@@ -111,7 +116,7 @@ func set_mission_state(phase: String, target_id: String, progress: float) -> voi
 	var travel_direction := target_center - earth_center
 	if mission_phase == "returning":
 		travel_direction = -travel_direction
-	ship_sprite.position = ship_position - ship_sprite.size * 0.5
+	ship_sprite.position = ship_position
 	ship_sprite.rotation = travel_direction.angle() + PI * 0.5
 	_center_camera_on_ship()
 
@@ -169,7 +174,7 @@ func _clamp_pan() -> void:
 func _center_camera_on_ship() -> void:
 	if not camera_locked_to_ship or size.x <= 0.0 or size.y <= 0.0:
 		return
-	var ship_center := ship_sprite.position + ship_sprite.size * 0.5
+	var ship_center := ship_sprite.position
 	world.position = size * 0.5 - ship_center
 	_clamp_pan()
 
