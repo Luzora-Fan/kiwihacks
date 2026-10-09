@@ -1,0 +1,3 @@
+First we will need to set up a 2d plane that takes the form of a map of the solar system
+It needs to be draggable to move to see other planets
+The planets will be in different directions, increasingly far away from the earth.
