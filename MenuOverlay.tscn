@@ -213,11 +213,11 @@ horizontal_alignment = 1
 vertical_alignment = 1
 
 [node name="CreditsText" type="Label" parent="Card/Pages/CreditsPage"]
-custom_minimum_size = Vector2(0, 128)
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.78, 0.8, 0.82, 1)
 theme_override_font_sizes/font_size = 13
-text = "Game design and development\nEarthward project team\n\nPlanet artwork\nProject-provided sprites\n\nEngine\nGodot Engine"
+text = "Made by CyberSkeleton"
 horizontal_alignment = 1
 vertical_alignment = 1
 
