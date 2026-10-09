@@ -2,19 +2,19 @@ extends Control
 
 signal planet_selected(planet_id: String)
 
+const ROCKET_SCENE := preload("res://Rocket.tscn")
+
 @onready var world: Control = $MapViewport/World
 @onready var marker_container: Control = $MapViewport/World/PlanetMarkers
-@onready var ship_sprite: AnimatedSprite2D = $MapViewport/World/ShipSprite
+@onready var rocket_container: Node2D = $MapViewport/World/Rockets
 @onready var earth_sprite: TextureRect = $MapViewport/World/EarthSprite
 
 var markers: Dictionary = {}
+var rockets: Dictionary = {}
 var planet_data: Array[Dictionary] = []
 var selected_id := ""
 var scanned_ids: Array[String] = []
 var fuel_range := 260.0
-var mission_phase := "idle"
-var mission_planet_id := ""
-var mission_progress := 0.0
 var camera_locked_to_ship := false
 var _initial_view_framed := false
 
@@ -45,9 +45,15 @@ func get_planet_catalog() -> Array[Dictionary]:
 
 
 func set_camera_locked_to_ship(locked: bool) -> void:
-	# Lock the view around the authored rocket marker while a mission is active.
+	# Center on the oldest active rocket when camera lock is enabled.
 	camera_locked_to_ship = locked
-	_center_camera_on_ship()
+	if not camera_locked_to_ship:
+		return
+	var target_position := _earth_center()
+	if not rockets.is_empty():
+		var first_rocket: AnimatedSprite2D = rockets.values()[0]
+		target_position = first_rocket.position
+	_center_camera_on_position(target_position)
 
 
 func reset_camera_view() -> void:
@@ -65,12 +71,11 @@ func configure(
 	selected_id = selected_planet
 	scanned_ids = surveyed_planets
 	fuel_range = range_limit
-	# Frame Earth and the starting selection once. later configure calls must preserve player panning.
+	# Frame Earth and the starting selection once, then preserve player panning.
 	if not _initial_view_framed and size.x > 0.0 and size.y > 0.0 and markers.has(selected_id):
-		var earth_center := earth_sprite.position + earth_sprite.size * 0.5
 		var target_marker: Control = markers[selected_id]
 		var target_center: Vector2 = target_marker.position + target_marker.call("get_body_center")
-		var focus_point := (earth_center + target_center) * 0.5
+		var focus_point := (_earth_center() + target_center) * 0.5
 		world.position = size * 0.5 - focus_point
 		_clamp_pan()
 		_initial_view_framed = true
@@ -83,51 +88,68 @@ func configure(
 		markers[planet_id].call("set_state", planet_id == selected_id, surveyed, reachable)
 
 
-func set_mission_state(phase: String, target_id: String, progress: float) -> void:
-	# Move the pre-placed rocket animation along the authored Earth-to-planet route.
-	mission_phase = phase
-	mission_planet_id = target_id
-	mission_progress = clampf(progress, 0.0, 1.0)
-	if mission_phase == "idle" or not markers.has(mission_planet_id):
-		ship_sprite.visible = false
-		ship_sprite.stop()
-		ship_sprite.frame = 0
-		ship_sprite.frame_progress = 0.0
-		var earth_center := earth_sprite.position + earth_sprite.size * 0.5
-		ship_sprite.position = earth_center
-		_center_camera_on_ship()
-		return
-	ship_sprite.visible = true
-	if not ship_sprite.is_playing():
-		ship_sprite.play("default")
+func set_mission_states(missions: Array[Dictionary]) -> void:
+	# Rockets are dynamic gameplay actors instantiated from the authored rocket scene.
+	var active_rocket_ids: Dictionary = {}
+	var camera_target := _earth_center()
+	var has_camera_target := false
+	for mission in missions:
+		var rocket_id := int(mission.get("rocket_id", -1))
+		var planet_id := String(mission.get("planet_id", ""))
+		if rocket_id < 0 or not markers.has(planet_id):
+			continue
 
-	var earth_center := earth_sprite.position + earth_sprite.size * 0.5
-	var target_marker: Control = markers[mission_planet_id]
-	var target_center: Vector2 = target_marker.position + target_marker.call("get_body_center")
-	var eased_progress := _ease_in_out(mission_progress)
-	var ship_position := earth_center
-	if mission_phase == "outbound":
-		ship_position = earth_center.lerp(target_center, eased_progress)
-	elif mission_phase == "scanning":
-		ship_position = target_center
-	elif mission_phase == "returning":
-		ship_position = target_center.lerp(earth_center, eased_progress)
+		var rocket: AnimatedSprite2D
+		if rockets.has(rocket_id):
+			rocket = rockets[rocket_id]
+		else:
+			rocket = ROCKET_SCENE.instantiate() as AnimatedSprite2D
+			rocket.name = "Rocket_%d" % rocket_id
+			rocket_container.add_child(rocket)
+			rocket.play("default")
+			rockets[rocket_id] = rocket
 
-	var travel_direction := target_center - earth_center
-	if mission_phase == "returning":
-		travel_direction = -travel_direction
-	ship_sprite.position = ship_position
-	ship_sprite.rotation = travel_direction.angle() + PI * 0.5
-	_center_camera_on_ship()
+		var target_marker: Control = markers[planet_id]
+		var target_center: Vector2 = target_marker.position + target_marker.call("get_body_center")
+		var progress := clampf(float(mission.get("progress", 0.0)), 0.0, 1.0)
+		var eased_progress := _ease_in_out(progress)
+		var phase := String(mission.get("phase", ""))
+		var rocket_position := target_center
+		var travel_direction := target_center - _earth_center()
+		if phase == "outbound":
+			rocket_position = _earth_center().lerp(target_center, eased_progress)
+		elif phase == "returning":
+			rocket_position = target_center.lerp(_earth_center(), eased_progress)
+			travel_direction = -travel_direction
+
+		rocket.position = rocket_position
+		rocket.rotation = travel_direction.angle() + PI * 0.5
+		active_rocket_ids[rocket_id] = true
+		if not has_camera_target:
+			camera_target = rocket_position
+			has_camera_target = true
+
+	for rocket_id in rockets.keys():
+		if not active_rocket_ids.has(rocket_id):
+			var rocket: AnimatedSprite2D = rockets[rocket_id]
+			rocket.queue_free()
+			rockets.erase(rocket_id)
+
+	if camera_locked_to_ship:
+		_center_camera_on_position(camera_target)
+
+
+func _earth_center() -> Vector2:
+	return earth_sprite.position + earth_sprite.size * 0.5
 
 
 func _ease_in_out(progress: float) -> float:
-	# Slow the rocket at launch and arrival while keeping the flight duration unchanged.
+	# Slow each rocket at launch and arrival without changing the flight time.
 	return progress * progress * (3.0 - 2.0 * progress)
 
 
 func _gui_input(event: InputEvent) -> void:
-	# Treat a press/release as selection, but switch to panning after a short movement threshold.
+	# Treat a press and release as selection, then switch to panning after a short drag.
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
 			_pointer_down = true
@@ -151,7 +173,7 @@ func _gui_input(event: InputEvent) -> void:
 
 
 func _planet_at(pointer_position: Vector2) -> String:
-	# Hit testing uses world coordinates because the map can be panned inside its viewport.
+	# Hit testing uses world coordinates because the map can be panned in its viewport.
 	var world_position := pointer_position - world.position
 	for planet in planet_data:
 		var planet_id := String(planet["id"])
@@ -164,23 +186,22 @@ func _planet_at(pointer_position: Vector2) -> String:
 
 
 func _clamp_pan() -> void:
-	# Keep the world covering the viewport while allowing it to move no farther than its edges.
+	# Keep the world over the viewport while limiting movement to its edges.
 	var minimum_x := minf(0.0, size.x - world.size.x)
 	var minimum_y := minf(0.0, size.y - world.size.y)
 	world.position.x = clampf(world.position.x, minimum_x, 0.0)
 	world.position.y = clampf(world.position.y, minimum_y, 0.0)
 
 
-func _center_camera_on_ship() -> void:
+func _center_camera_on_position(target_position: Vector2) -> void:
 	if not camera_locked_to_ship or size.x <= 0.0 or size.y <= 0.0:
 		return
-	var ship_center := ship_sprite.position
-	world.position = size * 0.5 - ship_center
+	world.position = size * 0.5 - target_position
 	_clamp_pan()
 
 
 func _fit_world_to_markers() -> void:
-	# Include extra room after the farthest authored marker for its labels and selection ring.
+	# Include room past the farthest authored marker for labels and selection rings.
 	var right_edge := world.size.x
 	var bottom_edge := world.size.y
 	for marker in markers.values():

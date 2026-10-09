@@ -1,9 +1,8 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://Scripts/SolarMap.gd" id="1_map"]
 [ext_resource type="Texture2D" path="res://Textures/background.png" id="2_background"]
 [ext_resource type="Texture2D" path="res://Textures/Planets/Earth.png" id="3_earth"]
-[ext_resource type="SpriteFrames" path="res://Data/RocketFrames.tres" id="4_rocket_frames"]
 [ext_resource type="Texture2D" path="res://Textures/Planets/Sun.png" id="13_sun"]
 [ext_resource type="PackedScene" path="res://PlanetMarker.tscn" id="5_marker"]
 [ext_resource type="Resource" path="res://Data/PlanetVeyra.tres" id="6_veyra"]
@@ -192,10 +191,5 @@ offset_right = 2200.0
 offset_bottom = 420.0
 planet_data = ExtResource("12_nymba")
 
-[node name="ShipSprite" type="AnimatedSprite2D" parent="MapViewport/World"]
-visible = false
-position = Vector2(92, 361)
-sprite_frames = ExtResource("4_rocket_frames")
-animation = &"default"
-modulate = Color(1.18, 1.28, 1.45, 1)
-texture_filter = 1
+[node name="Rockets" type="Node2D" parent="MapViewport/World"]
+z_index = 3

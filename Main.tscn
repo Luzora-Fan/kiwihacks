@@ -9,6 +9,7 @@
 [ext_resource type="AudioStream" uid="uid://dnt7knxwxdovn" path="res://Audio/space-ship-landing.mp3" id="7_landing"]
 [ext_resource type="Environment" path="res://SpaceEnvironment.tres" id="8_environment"]
 [ext_resource type="Theme" path="res://Data/GameTheme.tres" id="9_button_theme"]
+[ext_resource type="FontFile" path="res://Data/Nasalization Rg.otf" id="10_heading_font"]
 
 [sub_resource type="StyleBoxFlat" id="HeaderStyle"]
 content_margin_left = 16.0
@@ -106,6 +107,7 @@ theme_override_constants/separation = 1
 [node name="Title" type="Label" parent="Header/Content/Brand" unique_id=622683558]
 custom_minimum_size = Vector2(0, 27)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("10_heading_font")
 theme_override_colors/font_color = Color(0.9, 0.91, 0.93, 1)
 theme_override_font_sizes/font_size = 20
 text = "Earthward"
@@ -373,6 +375,7 @@ theme_override_constants/separation = 4
 [node name="Heading" type="Label" parent="SidebarScroll/PanelStack/MissionPanel/Content" unique_id=630536575]
 custom_minimum_size = Vector2(0, 18)
 layout_mode = 2
+theme_override_fonts/font = ExtResource("10_heading_font")
 theme_override_colors/font_color = Color(0.77, 0.79, 0.82, 1)
 theme_override_font_sizes/font_size = 13
 text = "MISSION"
@@ -411,6 +414,94 @@ text = "Choose a planet and launch your first survey."
 vertical_alignment = 1
 autowrap_mode = 2
 
+[node name="LandingChallenge" type="VBoxContainer" parent="SidebarScroll/PanelStack/MissionPanel/Content"]
+visible = false
+custom_minimum_size = Vector2(0, 38)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Hint" type="Label" parent="SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.82, 0.86, 1)
+theme_override_font_sizes/font_size = 10
+text = "Press E or click to begin."
+autowrap_mode = 2
+
+[node name="TimingTrack" type="Control" parent="SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge"]
+custom_minimum_size = Vector2(0, 18)
+size_flags_horizontal = 3
+layout_mode = 2
+
+[node name="LaneBackground" type="ColorRect" parent="SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge/TimingTrack"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.58, 0.16, 0.18, 1)
+
+[node name="GreenZone" type="ColorRect" parent="SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge/TimingTrack"]
+layout_mode = 1
+anchor_left = 0.4
+anchor_right = 0.6
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.25, 0.76, 0.39, 1)
+
+[node name="Marker" type="ColorRect" parent="SidebarScroll/PanelStack/MissionPanel/Content/LandingChallenge/TimingTrack"]
+visible = false
+offset_right = 6.0
+offset_bottom = 18.0
+mouse_filter = 2
+color = Color(0.94, 0.96, 1, 1)
+
+[node name="LandButton" type="Button" parent="SidebarScroll/PanelStack/MissionPanel/Content"]
+visible = false
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.94, 0.95, 0.96, 1)
+theme_override_font_sizes/font_size = 11
+text = "Start landing"
+
+[node name="FleetPanel" type="PanelContainer" parent="SidebarScroll/PanelStack"]
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("PanelStyle")
+
+[node name="Content" type="VBoxContainer" parent="SidebarScroll/PanelStack/FleetPanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Heading" type="Label" parent="SidebarScroll/PanelStack/FleetPanel/Content"]
+custom_minimum_size = Vector2(0, 18)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("10_heading_font")
+theme_override_colors/font_color = Color(0.77, 0.79, 0.82, 1)
+theme_override_font_sizes/font_size = 13
+text = "FLEET"
+vertical_alignment = 1
+
+[node name="Status" type="Label" parent="SidebarScroll/PanelStack/FleetPanel/Content"]
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.76, 0.78, 1)
+theme_override_font_sizes/font_size = 10
+text = "1 owned · 1 ready · 0 active"
+vertical_alignment = 1
+
+[node name="BuyRocketButton" type="Button" parent="SidebarScroll/PanelStack/FleetPanel/Content"]
+custom_minimum_size = Vector2(0, 34)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.94, 0.95, 0.96, 1)
+theme_override_font_sizes/font_size = 11
+text = "Buy rocket · CR 300"
+
 [node name="EarthPanel" type="PanelContainer" parent="SidebarScroll/PanelStack" unique_id=1280948318]
 custom_minimum_size = Vector2(0, 142)
 layout_mode = 2
@@ -428,6 +519,7 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("10_heading_font")
 theme_override_colors/font_color = Color(0.77, 0.79, 0.82, 1)
 theme_override_font_sizes/font_size = 13
 text = "Earth"
@@ -494,6 +586,7 @@ offset_left = 18.0
 offset_top = 14.0
 offset_right = 260.0
 offset_bottom = 34.0
+theme_override_fonts/font = ExtResource("10_heading_font")
 theme_override_colors/font_color = Color(0.9, 0.91, 0.93, 1)
 theme_override_font_sizes/font_size = 15
 text = "Map"
