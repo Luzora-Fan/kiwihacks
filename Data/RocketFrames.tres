@@ -1,0 +1,22 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://Textures/RocketFrames/rocket-frame-00.png" id="1_1qfa8"]
+[ext_resource type="Texture2D" path="res://Textures/RocketFrames/rocket-frame-01.png" id="2_ji3ga"]
+[ext_resource type="Texture2D" path="res://Textures/RocketFrames/rocket-frame-02.png" id="3_gpqte"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_1qfa8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_ji3ga")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_gpqte")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 12.5
+}]

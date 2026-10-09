@@ -36,6 +36,7 @@ const GUIDE_STEPS := [
 ]
 
 @onready var main_page: VBoxContainer = $Card/Pages/MainPage
+@onready var title_background: TextureRect = $TitleBackground
 @onready var settings_page: VBoxContainer = $Card/Pages/SettingsPage
 @onready var controls_page: VBoxContainer = $Card/Pages/ControlsPage
 @onready var guide_page: VBoxContainer = $Card/Pages/GuidePage
@@ -89,6 +90,7 @@ func _ready() -> void:
 
 func show_main_menu() -> void:
 	visible = true
+	_return_page = "main"
 	_show_page("main")
 
 
@@ -103,6 +105,8 @@ func hide_overlay() -> void:
 
 func _show_page(page_name: String) -> void:
 	# Pages share one card, with only the requested screen visible at a time.
+	# Keep title art on menu pages, then reveal the game behind the pause overlay.
+	title_background.visible = page_name != "pause" and _return_page != "pause"
 	main_page.visible = page_name == "main"
 	settings_page.visible = page_name == "settings"
 	controls_page.visible = page_name == "controls"
